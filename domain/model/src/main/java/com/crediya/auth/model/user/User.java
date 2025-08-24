@@ -1,14 +1,33 @@
 package com.crediya.auth.model.user;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
-//import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-//@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
 public class User {
+  private Long userId;
+  private UserType userType;
+  private String firstName;
+  private String lastName;
+  private String email;
+  private String identityCardNumber;
+  private String password;
+  private String phoneNumber;
+  private Integer basicWaging;
+
+  public User() {
+  }
+
+  public User(String firstName, String lastName, String email, String identityCardNumber, String password,
+              String phoneNumber, Integer basicWaging, UserType userType) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.identityCardNumber = identityCardNumber;
+    this.password = password;
+    this.phoneNumber = phoneNumber;
+    this.basicWaging = basicWaging;
+    this.userType = userType;
+  }
 }
