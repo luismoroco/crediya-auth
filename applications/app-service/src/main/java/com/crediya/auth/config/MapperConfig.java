@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class MapperConfig {
+
   @Bean
   public ModelMapper modelMapper() {
     return new ModelMapper();
@@ -19,4 +20,5 @@ public class MapperConfig {
   public Mapper mapper() {
     return new Mapper(this.modelMapper());
   }
+
 }
