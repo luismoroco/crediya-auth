@@ -1,6 +1,6 @@
 package com.crediya.auth.model.user;
 
-public enum UserType {
+public enum UserRol {
   ADMIN,
   USER,
 }

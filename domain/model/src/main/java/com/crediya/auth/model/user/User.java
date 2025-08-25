@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class User {
   private Long userId;
-  private UserType userType;
+  private UserRol userRol;
   private String firstName;
   private String lastName;
   private String email;
@@ -20,7 +20,7 @@ public class User {
   }
 
   public User(String firstName, String lastName, String email, String identityCardNumber, String password,
-              String phoneNumber, Integer basicWaging, UserType userType) {
+              String phoneNumber, Integer basicWaging, UserRol userRol) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -28,6 +28,6 @@ public class User {
     this.password = password;
     this.phoneNumber = phoneNumber;
     this.basicWaging = basicWaging;
-    this.userType = userType;
+    this.userRol = userRol;
   }
 }

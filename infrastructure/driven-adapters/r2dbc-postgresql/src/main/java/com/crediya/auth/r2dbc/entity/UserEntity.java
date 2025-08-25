@@ -1,6 +1,6 @@
 package com.crediya.auth.r2dbc.entity;
 
-import com.crediya.auth.model.user.UserType;
+import com.crediya.auth.model.user.UserRol;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
@@ -17,7 +17,7 @@ public class UserEntity {
 
   @Id
   private Long userId;
-  @Enumerated(EnumType.ORDINAL) private UserType userType;
+  @Enumerated(EnumType.ORDINAL) private UserRol userType;
   private String firstName;
   private String lastName;
   private String email;
