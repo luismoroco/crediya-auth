@@ -32,4 +32,5 @@ public class User {
     this.basicWaging = basicWaging;
     this.userRoleId = userRoleId;
   }
+
 }
