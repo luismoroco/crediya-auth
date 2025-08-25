@@ -1,13 +1,11 @@
 package com.crediya.auth.r2dbc.entity;
 
-import com.crediya.auth.model.user.UserRol;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table("user")
+@Table("users")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,9 +13,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 public class UserEntity {
 
-  @Id
-  private Long userId;
-  @Enumerated(EnumType.ORDINAL) private UserRol userType;
+  @Id @Column("user_id") private Long userId;
+  private Integer userRoleId;
   private String firstName;
   private String lastName;
   private String email;

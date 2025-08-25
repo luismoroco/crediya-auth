@@ -1,6 +1,6 @@
 package com.crediya.auth.api.dto;
 
-import com.crediya.auth.model.user.UserRol;
+import com.crediya.auth.model.user.UserRole;
 import com.crediya.auth.usecase.user.dto.CreateUserDto;
 import com.crediya.common.mapping.Mappable;
 
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateUserRequest implements Mappable<CreateUserDto> {
-  private UserRol userRol;
+  private UserRole userRole;
   private String firstName;
   private String lastName;
   private String email;

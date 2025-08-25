@@ -1,6 +1,7 @@
 package com.crediya.auth.api;
 
 import com.crediya.auth.api.dto.CreateUserRequest;
+import com.crediya.auth.model.user.User;
 import com.crediya.auth.usecase.user.UserUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class WebController {
   private final UserUseCase useCase;
 
   @PostMapping("")
-  public Mono<ResponseEntity<String>> createUser(@RequestBody final CreateUserRequest request) {
+  public Mono<ResponseEntity<User>> createUser(@RequestBody final CreateUserRequest request) {
     return this.useCase.createUser(request.map()).map(ResponseEntity::ok);
   }
 }

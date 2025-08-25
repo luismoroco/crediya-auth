@@ -23,4 +23,13 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     public Mono<User> findByUserId(Long userId) {
         return super.findById(userId);
     }
+
+    @Override
+    public Mono<User> save(User user) {
+        return super.save(user);
+    }
+
+    public Mono<Boolean> existsByEmail(String email) {
+        return this.repository.existsByEmail(email);
+    }
 }

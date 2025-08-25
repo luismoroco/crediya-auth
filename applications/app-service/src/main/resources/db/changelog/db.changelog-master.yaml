@@ -21,10 +21,10 @@ databaseChangeLog:
       author: com.crediya.dev
       changes:
         - createTable:
-            tableName: user_rol
+            tableName: user_roles
             columns:
               - column:
-                  name: user_rol_id
+                  name: user_role_id
                   type: INT
                   constraints:
                     primaryKey: true
@@ -43,12 +43,12 @@ databaseChangeLog:
         - sql:
             dbms: postgresql
             sql: |
-              INSERT INTO user_rol(user_rol_id, name, description)
+              INSERT INTO user_roles(user_role_id, name, description)
               VALUES (1, 'MANAGER', 'Manager'),
                      (2, 'CLIENT', 'Client');
 
         - createTable:
-            tableName: user
+            tableName: users
             columns:
               - column:
                   name: user_id
@@ -57,7 +57,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: user_rol_id
+                  name: user_role_id
                   type: INT
                   constraints:
                     nullable: false
@@ -115,14 +115,14 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               CREATE TRIGGER update_user_updated_at
-              BEFORE UPDATE ON "user"
+              BEFORE UPDATE ON "users"
               FOR EACH ROW
               EXECUTE FUNCTION update_updated_at_column();
 
         - sql:
             dbms: postgresql
             sql: |
-              ALTER TABLE "user"
+              ALTER TABLE "users"
               ADD CONSTRAINT check_first_name_length 
                 CHECK (char_length(first_name) > 1) NOT VALID,
               ADD CONSTRAINT check_last_name_length 
@@ -131,8 +131,8 @@ databaseChangeLog:
                 CHECK (position('@' IN email) > 0) NOT VALID;
 
         - addForeignKeyConstraint:
-            baseTableName: user
-            baseColumnNames: user_rol_id
-            constraintName: fk_user_user_rol_id_user_rol
-            referencedTableName: user_rol
-            referencedColumnNames: user_rol_id
+            baseTableName: users
+            baseColumnNames: user_role_id
+            constraintName: fk_users_user_role_id_user_role
+            referencedTableName: user_roles
+            referencedColumnNames: user_role_id
