@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateUserDto {
+public class SignUpDTO {
 
   private UserRole userRole;
   private String firstName;
@@ -18,11 +18,11 @@ public class CreateUserDto {
   private String phoneNumber;
   private Integer basicWaging;
 
-  public CreateUserDto() {
+  public SignUpDTO() {
   }
 
-  public CreateUserDto(UserRole userRole, String firstName, String lastName,  String email, String identityCardNumber,
-                       String password, String phoneNumber, Integer basicWaging) {
+  public SignUpDTO(UserRole userRole, String firstName, String lastName, String email, String identityCardNumber,
+                   String password, String phoneNumber, Integer basicWaging) {
     this.userRole = userRole;
     this.firstName = firstName;
     this.lastName = lastName;

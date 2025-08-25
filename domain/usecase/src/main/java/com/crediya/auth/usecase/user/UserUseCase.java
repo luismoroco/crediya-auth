@@ -2,7 +2,7 @@ package com.crediya.auth.usecase.user;
 
 import com.crediya.auth.model.user.User;
 import com.crediya.auth.model.user.gateways.UserRepository;
-import com.crediya.auth.usecase.user.dto.CreateUserDto;
+import com.crediya.auth.usecase.user.dto.SignUpDTO;
 import com.crediya.common.exc.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ public class UserUseCase {
 
   private final UserRepository repository;
 
-  public Mono<User> createUser(CreateUserDto dto) {
+  public Mono<User> signUp(SignUpDTO dto) {
     return this.repository.existsByEmail(dto.getEmail())
       .flatMap(userExist -> {
         if (userExist) {
