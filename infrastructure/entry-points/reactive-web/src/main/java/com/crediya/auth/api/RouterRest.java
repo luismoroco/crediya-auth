@@ -14,7 +14,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RouterRest {
 
   @Bean
-  public RouterFunction<ServerResponse> userRouterFunction(Handler handler, GlobalExceptionFilter filter) {
+  public RouterFunction<ServerResponse> routerFunction(Handler handler, GlobalExceptionFilter filter) {
     return route(POST("/api/v1/users"), handler::listenPOSTSignUp)
       .filter(filter);
   }

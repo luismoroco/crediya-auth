@@ -24,4 +24,5 @@ public class ValidatorConfig {
   public ObjectValidator objectValidator() {
     return new ObjectValidator(this.validator());
   }
+
 }
