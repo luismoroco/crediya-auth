@@ -1,6 +1,7 @@
 package com.crediya.auth.api.config;
 
 import com.crediya.common.validation.ObjectValidator;
+
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;

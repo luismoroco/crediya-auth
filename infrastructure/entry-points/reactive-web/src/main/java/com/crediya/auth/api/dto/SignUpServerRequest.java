@@ -1,7 +1,6 @@
 package com.crediya.auth.api.dto;
 
 import com.crediya.auth.model.user.UserRole;
-
 import com.crediya.auth.usecase.user.dto.SignUpDTO;
 import com.crediya.common.mapping.Mappable;
 
