@@ -17,7 +17,7 @@ public class UserUseCase {
     return this.repository.existsByEmail(dto.getEmail())
       .flatMap(userExist -> {
         if (userExist) {
-          return Mono.error(new BadRequestException("Email already exists"));
+          return Mono.error(new BadRequestException("Email already exists", null));
         }
 
         User user = new User();
