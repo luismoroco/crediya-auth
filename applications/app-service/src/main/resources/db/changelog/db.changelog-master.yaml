@@ -1,0 +1,138 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0-create-updated-at-column-function
+      author: com.crediya.dev
+      changes:
+        - sql:
+            splitStatements: false
+            stripComments: true
+            dbms: postgresql
+            sql: |
+              CREATE OR REPLACE FUNCTION update_updated_at_column()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+
+  - changeSet:
+      id: 1-create-user-schema
+      author: com.crediya.dev
+      changes:
+        - createTable:
+            tableName: user_rol
+            columns:
+              - column:
+                  name: user_rol_id
+                  type: INT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              INSERT INTO user_rol(user_rol_id, name, description)
+              VALUES (1, 'MANAGER', 'Manager'),
+                     (2, 'CLIENT', 'Client');
+
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_rol_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identity_card_number
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: phone_number
+                  type: VARCHAR(25)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: basic_waging
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              CREATE TRIGGER update_user_updated_at
+              BEFORE UPDATE ON "user"
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE "user"
+              ADD CONSTRAINT check_first_name_length 
+                CHECK (char_length(first_name) > 1) NOT VALID,
+              ADD CONSTRAINT check_last_name_length 
+                CHECK (char_length(last_name) > 1) NOT VALID,
+              ADD CONSTRAINT check_email_contains_at 
+                CHECK (position('@' IN email) > 0) NOT VALID;
+
+        - addForeignKeyConstraint:
+            baseTableName: user
+            baseColumnNames: user_rol_id
+            constraintName: fk_user_user_rol_id_user_rol
+            referencedTableName: user_rol
+            referencedColumnNames: user_rol_id
