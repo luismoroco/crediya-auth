@@ -1,14 +1,10 @@
 package com.crediya.auth.model.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class User {
 
   private Long userId;
@@ -21,19 +17,19 @@ public class User {
   private String phoneNumber;
   private Integer basicWaging;
 
-//  public User() {
-//  }
-//
-//  public User(Long userId, String firstName, String lastName, String email, String identityCardNumber, String password,
-//              String phoneNumber, Integer basicWaging, Integer userRolId) {
-//    this.userId = userId;
-//    this.firstName = firstName;
-//    this.lastName = lastName;
-//    this.email = email;
-//    this.identityCardNumber = identityCardNumber;
-//    this.password = password;
-//    this.phoneNumber = phoneNumber;
-//    this.basicWaging = basicWaging;
-//    this.userRolId = userRolId;
-//  }
+  public User() {
+  }
+
+  public User(Long userId, String firstName, String lastName, String email, String identityCardNumber, String password,
+              String phoneNumber, Integer basicWaging, Integer userRoleId) {
+    this.userId = userId;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.identityCardNumber = identityCardNumber;
+    this.password = password;
+    this.phoneNumber = phoneNumber;
+    this.basicWaging = basicWaging;
+    this.userRoleId = userRoleId;
+  }
 }

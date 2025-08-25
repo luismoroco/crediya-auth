@@ -18,7 +18,7 @@ public class CreateUserDto {
   private String phoneNumber;
   private Integer basicWaging;
 
-  public CreateUserDto(UserRole userRole) {
+  public CreateUserDto() {
   }
 
   public CreateUserDto(UserRole userRole, String firstName, String lastName,  String email, String identityCardNumber,
