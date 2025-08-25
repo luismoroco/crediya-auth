@@ -12,4 +12,8 @@ public enum UserRole {
   UserRole(int code) {
     this.code = code;
   }
+
+  public static UserRole fromCode(int code) {
+    return code == 1 ? ADMIN : USER;
+  }
 }

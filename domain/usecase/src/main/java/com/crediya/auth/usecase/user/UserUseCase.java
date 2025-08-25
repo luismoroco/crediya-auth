@@ -21,7 +21,7 @@ public class UserUseCase {
         }
 
         User user = new User();
-        user.setUserRoleId(dto.getUserRole().getCode());
+        user.setUserRole(dto.getUserRole());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());

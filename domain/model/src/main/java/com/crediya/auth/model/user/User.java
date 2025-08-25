@@ -33,4 +33,12 @@ public class User {
     this.userRoleId = userRoleId;
   }
 
+  public void setUserRole(UserRole userRole) {
+    this.userRoleId = userRole.getCode();
+  }
+
+  public UserRole getUserRole() {
+    return UserRole.fromCode(this.userRoleId);
+  }
+
 }
