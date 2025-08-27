@@ -50,7 +50,6 @@ class UserReactiveRepositoryAdapterTest {
           "pass", "999999999", 1000L, 1, LocalDate.parse("2000-08-24"), "Street 123");
     }
 
-
     @Test
     void mustFindValueById() {
         UserEntity entity = createEntity();

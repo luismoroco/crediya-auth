@@ -1,60 +1,111 @@
 package com.crediya.auth.api;
 
+import com.crediya.auth.model.user.User;
+import com.crediya.auth.usecase.user.UserUseCase;
+import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
+import com.crediya.common.api.handling.GlobalExceptionFilter;
+import com.crediya.common.exc.ValidationException;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import reactor.core.publisher.Mono;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
-@WebFluxTest
+import java.time.LocalDate;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 class RouterRestTest {
 
-    @Autowired
-    private WebTestClient webTestClient;
+  private UserUseCase useCase;
+  private WebTestClient webTestClient;
 
-    @Test
-    void testListenGETUseCase() {
-        webTestClient.get()
-                .uri("/api/usecase/path")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
-    }
+  private static User createUser() {
+    return new User(1L, "John", "Doe", "john@example.com", "12345",
+      "pass", "999999999", 1000L, 1, LocalDate.parse("2000-08-24"), "Street 123");
+  }
 
-    @Test
-    void testListenGETOtherUseCase() {
-        webTestClient.get()
-                .uri("/api/otherusercase/path")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
-    }
+  private RegisterUserDTO createUserDTO() {
+    return RegisterUserDTO.builder()
+      .firstName("John")
+      .lastName("Doe")
+      .email("john@example.com")
+      .identityCardNumber("12345")
+      .password("pass")
+      .phoneNumber("999999")
+      .basicWaging(1000L)
+      .birthDate("2000-08-24")
+      .address("Street 123")
+      .build();
+  }
 
-    @Test
-    void testListenPOSTUseCase() {
-        webTestClient.post()
-                .uri("/api/usecase/otherpath")
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue("")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
-    }
+  private RegisterUserDTO createInvalidUserDTO() {
+    return RegisterUserDTO.builder()
+      .firstName("John")
+      .lastName("Doe")
+      .email("john-123123123-dfgexamplecom")
+      .identityCardNumber("12345")
+      .password("pass")
+      .phoneNumber("999999")
+      .basicWaging(1000L)
+      .birthDate("2000-08-242")
+      .address("Street 123")
+      .build();
+  }
+
+  @BeforeEach
+  void setUp() {
+    useCase = mock(UserUseCase.class);
+    Handler handler = new Handler(useCase);
+    RouterFunction<?> routes = new RouterRest(handler)
+      .routerFunction(new GlobalExceptionFilter());
+    webTestClient = WebTestClient.bindToRouterFunction(routes)
+      .build();
+  }
+
+  @Test
+  void mustRegisterUser() {
+    User user = createUser();
+
+    when(useCase.registerUser(org.mockito.ArgumentMatchers.any(RegisterUserDTO.class)))
+      .thenReturn(Mono.just(user));
+
+    webTestClient.post()
+      .uri("/api/v1/users")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(createUserDTO())
+      .exchange()
+      .expectStatus().isCreated();
+  }
+
+  @Test
+  void mustNotRegisterUser() {
+    when(useCase.registerUser(org.mockito.ArgumentMatchers.any(RegisterUserDTO.class)))
+      .thenReturn(Mono.error(new ValidationException("Invalid User")));
+
+    webTestClient.post()
+      .uri("/api/v1/users")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(createInvalidUserDTO())
+      .exchange()
+      .expectStatus().is4xxClientError();
+  }
+
+  @Test
+  void testListenPOSTUseCase() {
+    webTestClient.post()
+      .uri("/api/usecase/otherpath")
+      .accept(MediaType.APPLICATION_JSON)
+      .bodyValue("")
+      .exchange()
+      .expectStatus().isOk()
+      .expectBody(String.class)
+      .value(userResponse -> {
+          Assertions.assertThat(userResponse).isEmpty();
+        }
+      );
+  }
 }

@@ -13,6 +13,7 @@ import com.crediya.common.transaction.Transaction;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class UserUseCase {
           user.setPassword(dto.getPassword());
           user.setPhoneNumber(dto.getPhoneNumber());
           user.setBasicWaging(dto.getBasicWaging());
-          user.setBirthDate(dto.getBirthDate());
+          user.setBirthDate(LocalDate.parse(dto.getBirthDate()));
           user.setAddress(dto.getAddress());
 
           return this.repository.save(user);
@@ -96,9 +97,17 @@ public class UserUseCase {
       throw new ValidationException("Invalid basic waging");
     }
 
-    if (Objects.isNull(dto.getBirthDate()) ||
-      dto.getBirthDate().isAfter(LocalDate.now().minusYears(MINIMUM_AGE))) {
-      throw new ValidationException("Invalid birth date");
+    if (Objects.isNull(dto.getBirthDate()) || dto.getBirthDate().isBlank()) {
+      throw new ValidationException("Invalid birth date format. Expected YYYY-MM-DD");
+    }
+    try {
+      LocalDate birthDate = LocalDate.parse(dto.getBirthDate());
+
+      if (birthDate.isAfter(LocalDate.now().minusYears(MINIMUM_AGE))) {
+        throw new ValidationException("Invalid birth date");
+      }
+    } catch (DateTimeParseException e) {
+      throw new ValidationException("Invalid birth date format. Expected YYYY-MM-DD");
     }
 
     if (Objects.isNull(dto.getAddress()) || dto.getAddress().isBlank()) {

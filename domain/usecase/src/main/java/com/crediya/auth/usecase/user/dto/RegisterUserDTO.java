@@ -1,12 +1,12 @@
 package com.crediya.auth.usecase.user.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
+@Builder
 public class RegisterUserDTO {
 
   private String firstName;
@@ -16,14 +16,14 @@ public class RegisterUserDTO {
   private String password;
   private String phoneNumber;
   private Long basicWaging;
-  private LocalDate birthDate;
+  private String birthDate;
   private String address;
 
   public RegisterUserDTO() {
   }
 
   public RegisterUserDTO(String firstName, String lastName, String email, String identityCardNumber, String password,
-                         String phoneNumber, Long basicWaging, LocalDate birthDate, String address) {
+                         String phoneNumber, Long basicWaging, String birthDate, String address) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;

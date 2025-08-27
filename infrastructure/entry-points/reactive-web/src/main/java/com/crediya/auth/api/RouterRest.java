@@ -1,6 +1,7 @@
 package com.crediya.auth.api;
 
 import com.crediya.auth.api.dto.RegisterUserServerRequest;
+import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +24,10 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
+@RequiredArgsConstructor
 public class RouterRest {
+
+  private final Handler handler;
 
   @RouterOperations({
     @RouterOperation(
@@ -38,7 +43,7 @@ public class RouterRest {
           required = true,
           content = @Content(
             mediaType = "application/json",
-            schema = @Schema(implementation = RegisterUserServerRequest.class),
+            schema = @Schema(implementation = RegisterUserDTO.class),
             examples = {
               @ExampleObject(
                 name = "Example",
@@ -67,9 +72,9 @@ public class RouterRest {
     )
   })
   @Bean
-  public RouterFunction<ServerResponse> routerFunction(Handler handler, GlobalExceptionFilter filter) {
-    return route(POST("/api/v1/users"), handler::listenPOSTRegisterUser)
-      .andRoute(GET("/api/v1/users/{email}"), handler::listenPOSTGetUserByEmail)
+  public RouterFunction<ServerResponse> routerFunction(GlobalExceptionFilter filter) {
+    return route(POST("/api/v1/users"), this.handler::listenPOSTRegisterUser)
+      .andRoute(GET("/api/v1/users/{email}"), this.handler::listenPOSTGetUserByEmail)
       .filter(filter);
   }
 }

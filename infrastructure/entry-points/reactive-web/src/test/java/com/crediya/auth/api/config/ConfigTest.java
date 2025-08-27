@@ -2,9 +2,13 @@ package com.crediya.auth.api.config;
 
 import com.crediya.auth.api.Handler;
 import com.crediya.auth.api.RouterRest;
+import com.crediya.auth.usecase.user.UserUseCase;
+import com.crediya.common.api.handling.GlobalExceptionFilter;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -17,10 +21,16 @@ class ConfigTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @MockBean
+    private UserUseCase userUseCase;
+
+    @MockBean
+    private GlobalExceptionFilter globalExceptionFilter;
+
     @Test
     void corsConfigurationShouldAllowOrigins() {
-        webTestClient.get()
-                .uri("/api/usecase/path")
+        this.webTestClient.get()
+                .uri("/health")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueEquals("Content-Security-Policy",

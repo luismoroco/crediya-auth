@@ -1,9 +1,7 @@
 package com.crediya.auth.api;
 
-import com.crediya.auth.api.dto.RegisterUserServerRequest;
 import com.crediya.auth.usecase.user.UserUseCase;
-import com.crediya.common.mapping.Mappable;
-import com.crediya.common.validation.ObjectValidator;
+import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,9 +18,7 @@ public class Handler {
   private final UserUseCase useCase;
 
   public Mono<ServerResponse> listenPOSTRegisterUser(ServerRequest serverRequest) {
-    return serverRequest.bodyToMono(RegisterUserServerRequest.class)
-      .flatMap(ObjectValidator.get()::validate)
-      .map(Mappable::map)
+    return serverRequest.bodyToMono(RegisterUserDTO.class)
       .flatMap(this.useCase::registerUser)
       .flatMap(dto -> ServerResponse
         .status(HttpStatus.CREATED)
