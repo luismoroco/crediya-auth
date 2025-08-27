@@ -27,11 +27,6 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     }
 
     @Override
-    public Mono<User> save(User user) {
-        return super.save(user);
-    }
-
-    @Override
     public Mono<Boolean> existsByEmail(String email) {
         return this.repository.existsByEmail(email);
     }
