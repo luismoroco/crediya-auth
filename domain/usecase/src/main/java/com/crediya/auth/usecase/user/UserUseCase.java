@@ -31,7 +31,7 @@ public class UserUseCase {
     return this.transaction.init(
       this.repository.existsByEmail(dto.getEmail())
         .flatMap(userExist -> {
-          if (userExist) {
+          if (Boolean.TRUE.equals(userExist)) {
             return Mono.error(new ValidationException("Email already exists"));
           }
 
