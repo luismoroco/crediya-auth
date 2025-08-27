@@ -23,7 +23,7 @@ public class UserEntity {
   private String password;
   private String phoneNumber;
   private Long basicWaging;
-  private LocalDate  birthDate;
+  private LocalDate birthDate;
   private String address;
 }
 

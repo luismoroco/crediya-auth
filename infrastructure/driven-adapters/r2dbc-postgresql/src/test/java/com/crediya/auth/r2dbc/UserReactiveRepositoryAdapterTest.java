@@ -1,22 +1,27 @@
 package com.crediya.auth.r2dbc;
 
+import com.crediya.auth.model.user.User;
+import com.crediya.auth.r2dbc.entity.UserEntity;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.reactivecommons.utils.ObjectMapper;
-import org.springframework.data.domain.Example;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDate;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserReactiveRepositoryAdapterTest {
-    // TODO: Fix repository tests
+
     @InjectMocks
     UserReactiveRepositoryAdapter repositoryAdapter;
 
@@ -26,52 +31,72 @@ class UserReactiveRepositoryAdapterTest {
     @Mock
     ObjectMapper mapper;
 
+    private static UserEntity createEntity() {
+        return UserEntity.builder()
+          .userId(1L)
+          .firstName("John")
+          .lastName("Doe")
+          .email("john@example.com")
+          .identityCardNumber("12345")
+          .password("pass")
+          .phoneNumber("999999999")
+          .basicWaging(1000L)
+          .userRoleId(1)
+          .birthDate(LocalDate.parse("2000-08-24"))
+          .address("Street 123")
+          .build();
+    }
+
+    private static User createUser() {
+        return new User(1L, "John", "Doe", "john@example.com", "12345",
+          "pass", "999999999", 1000L, 1, LocalDate.parse("2000-08-24"), "Street 123");
+    }
+
+
     @Test
     void mustFindValueById() {
+        UserEntity entity = createEntity();
+        User user = createUser();
 
-        when(repository.findById("1")).thenReturn(Mono.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+        when(repository.findById(1L)).thenReturn(Mono.just(entity));
+        when(mapper.map(entity, User.class)).thenReturn(user);
 
-        Mono<Object> result = repositoryAdapter.findById("1");
+        Mono<User> result = repositoryAdapter.findByUserId(1L);
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
-                .verifyComplete();
+          .expectNextMatches(u -> u.getEmail().equals("john@example.com"))
+          .verifyComplete();
     }
 
     @Test
     void mustFindAllValues() {
-        when(repository.findAll()).thenReturn(Flux.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+        UserEntity entity = createEntity();
+        User user = createUser();
 
-        Flux<Object> result = repositoryAdapter.findAll();
+        when(repository.findAll()).thenReturn(Flux.just(entity));
+        when(mapper.map(entity, User.class)).thenReturn(user);
 
-        StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
-                .verifyComplete();
-    }
-
-    @Test
-    void mustFindByExample() {
-        when(repository.findAll(any(Example.class))).thenReturn(Flux.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
-
-        Flux<Object> result = repositoryAdapter.findByExample("test");
+        Flux<User> result = repositoryAdapter.findAll();
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
-                .verifyComplete();
+          .expectNextMatches(u -> u.getEmail().equals("john@example.com"))
+          .verifyComplete();
     }
 
     @Test
     void mustSaveValue() {
-        when(repository.save("test")).thenReturn(Mono.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+        // TODO: Review weird behavior
+        UserEntity entity = createEntity();
+        User user = createUser();
 
-        Mono<Object> result = repositoryAdapter.save("test");
+        when(mapper.map(any(UserEntity.class), eq(User.class))).thenReturn(user);
+        when(mapper.map(any(User.class), eq(UserEntity.class))).thenReturn(entity);
+        when(repository.save(entity)).thenReturn(Mono.just(entity));
+
+        Mono<User> result = repositoryAdapter.save(user);
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
-                .verifyComplete();
+          .expectNextMatches(u -> u.getEmail().equals("john@example.com"))
+          .verifyComplete();
     }
 }
