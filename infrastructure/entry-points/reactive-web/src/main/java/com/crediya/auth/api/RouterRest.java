@@ -1,6 +1,6 @@
 package com.crediya.auth.api;
 
-import com.crediya.auth.api.dto.SignUpServerRequest;
+import com.crediya.auth.api.dto.RegisterUserServerRequest;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,28 +29,29 @@ public class RouterRest {
       produces = { "application/json" },
       beanClass = Handler.class,
       method = RequestMethod.POST,
-      beanMethod = "listenPOSTSignUp",
+      beanMethod = "listenPOSTRegisterUser",
       operation = @Operation(
-        operationId = "signUp",
+        operationId = "registerUser",
         summary = "Register new user",
         requestBody = @RequestBody(
           required = true,
           content = @Content(
             mediaType = "application/json",
-            schema = @Schema(implementation = SignUpServerRequest.class),
+            schema = @Schema(implementation = RegisterUserServerRequest.class),
             examples = {
               @ExampleObject(
                 name = "Example",
                 value = """
                                   {
-                                    "userRole": "ADMIN",
                                     "firstName": "Juan",
                                     "lastName": "Pérez",
                                     "email": "juan.perez@correo.com",
                                     "identityCardNumber": "87654321",
                                     "password": "Secr3tPass!",
-                                    "phoneNumber": "+51987654321",
-                                    "basicWaging": 3500
+                                    "phoneNumber": "51987654321",
+                                    "basicWaging": 3500,
+                                    "address": "Av. Simp",
+                                    "birthDate": "2000-08-24"
                                   }
                                   """
               )
@@ -66,7 +67,7 @@ public class RouterRest {
   })
   @Bean
   public RouterFunction<ServerResponse> routerFunction(Handler handler, GlobalExceptionFilter filter) {
-    return route(POST("/api/v1/users"), handler::listenPOSTSignUp)
+    return route(POST("/api/v1/users"), handler::listenPOSTRegisterUser)
       .filter(filter);
   }
 }

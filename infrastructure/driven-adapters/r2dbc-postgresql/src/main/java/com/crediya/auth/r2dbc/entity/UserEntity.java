@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDate;
+
 @Table("users")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +23,8 @@ public class UserEntity {
   private String identityCardNumber;
   private String password;
   private String phoneNumber;
-  private Integer basicWaging;
+  private Long basicWaging;
+  private LocalDate  birthDate;
+  private String address;
 }
 

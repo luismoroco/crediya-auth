@@ -1,6 +1,6 @@
 package com.crediya.auth.api;
 
-import com.crediya.auth.api.dto.SignUpServerRequest;
+import com.crediya.auth.api.dto.RegisterUserServerRequest;
 import com.crediya.auth.usecase.user.UserUseCase;
 import com.crediya.common.mapping.Mappable;
 import com.crediya.common.validation.ObjectValidator;
@@ -18,11 +18,11 @@ public class Handler {
 
   private final UserUseCase useCase;
 
-  public Mono<ServerResponse> listenPOSTSignUp(ServerRequest serverRequest) {
-    return serverRequest.bodyToMono(SignUpServerRequest.class)
+  public Mono<ServerResponse> listenPOSTRegisterUser(ServerRequest serverRequest) {
+    return serverRequest.bodyToMono(RegisterUserServerRequest.class)
       .flatMap(ObjectValidator.get()::validate)
       .map(Mappable::map)
-      .flatMap(this.useCase::signUp)
+      .flatMap(this.useCase::registerUser)
       .flatMap(dto -> ServerResponse.status(HttpStatus.CREATED).bodyValue(dto));
   }
 }

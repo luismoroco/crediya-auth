@@ -87,7 +87,6 @@ databaseChangeLog:
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
-                    unique: true
               - column:
                   name: phone_number
                   type: VARCHAR(25)
@@ -96,6 +95,16 @@ databaseChangeLog:
               - column:
                   name: basic_waging
                   type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:

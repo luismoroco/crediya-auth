@@ -1,3 +1,7 @@
+logging:
+  level:
+    root: INFO
+    com.crediya.auth: DEBUG
 server:
   port: 8081
 spring:

@@ -1,29 +1,29 @@
 package com.crediya.auth.usecase.user.dto;
 
-import com.crediya.auth.model.user.UserRole;
-
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
-public class SignUpDTO {
+public class RegisterUserDTO {
 
-  private UserRole userRole;
   private String firstName;
   private String lastName;
   private String email;
   private String identityCardNumber;
   private String password;
   private String phoneNumber;
-  private Integer basicWaging;
+  private Long basicWaging;
+  private LocalDate birthDate;
+  private String address;
 
-  public SignUpDTO() {
+  public RegisterUserDTO() {
   }
 
-  public SignUpDTO(UserRole userRole, String firstName, String lastName, String email, String identityCardNumber,
-                   String password, String phoneNumber, Integer basicWaging) {
-    this.userRole = userRole;
+  public RegisterUserDTO(String firstName, String lastName, String email, String identityCardNumber, String password,
+                         String phoneNumber, Long basicWaging, LocalDate birthDate, String address) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -31,5 +31,7 @@ public class SignUpDTO {
     this.password = password;
     this.phoneNumber = phoneNumber;
     this.basicWaging = basicWaging;
+    this.birthDate = birthDate;
+    this.address = address;
   }
 }
