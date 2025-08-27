@@ -4,8 +4,8 @@ import com.crediya.auth.model.user.User;
 import com.crediya.auth.usecase.user.UserUseCase;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
+import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -95,17 +95,32 @@ class RouterRestTest {
   }
 
   @Test
-  void testListenPOSTUseCase() {
-    webTestClient.post()
-      .uri("/api/usecase/otherpath")
-      .accept(MediaType.APPLICATION_JSON)
-      .bodyValue("")
+  void mustGetUserByEmail() {
+    User user = createUser();
+    String email = user.getEmail();
+
+    when(useCase.getUserByEmail(email))
+      .thenReturn(Mono.just(user));
+
+    webTestClient.get()
+      .uri("/api/v1/users/{email}", email)
       .exchange()
       .expectStatus().isOk()
-      .expectBody(String.class)
-      .value(userResponse -> {
-          Assertions.assertThat(userResponse).isEmpty();
-        }
-      );
+      .expectBody()
+      .jsonPath("$.email").isEqualTo(email)
+      .jsonPath("$.firstName").isEqualTo(user.getFirstName());
+  }
+
+  @Test
+  void mustNotGetUserByEmail() {
+    String email = "not-registered-user@example.com";
+
+    when(useCase.getUserByEmail(email))
+      .thenReturn(Mono.error(new NotFoundException("Invalid email")));
+
+    webTestClient.post()
+      .uri("/api/v1/users/{email}", email)
+      .exchange()
+      .expectStatus().is4xxClientError();
   }
 }
