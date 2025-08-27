@@ -25,4 +25,9 @@ public class Handler {
       .flatMap(this.useCase::registerUser)
       .flatMap(dto -> ServerResponse.status(HttpStatus.CREATED).bodyValue(dto));
   }
+
+  public Mono<ServerResponse> listenPOSTGetUserByEmail(ServerRequest serverRequest) {
+    return this.useCase.getUserByEmail(serverRequest.pathVariable("email"))
+      .flatMap(dto -> ServerResponse.status(HttpStatus.OK).bodyValue(dto));
+  }
 }

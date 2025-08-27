@@ -6,6 +6,7 @@ import com.crediya.auth.model.user.gateways.UserRepository;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.EmailUtils;
 import com.crediya.common.PhoneUtils;
+import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
 import com.crediya.common.transaction.Transaction;
 
@@ -49,6 +50,15 @@ public class UserUseCase {
           return this.repository.save(user);
         })
     );
+  }
+
+  public Mono<User> getUserByEmail(String email) {
+    if (Objects.isNull(email)) {
+      throw new ValidationException("Invalid email");
+    }
+
+    return this.repository.findByEmail(email)
+      .switchIfEmpty(Mono.error(new NotFoundException("Invalid email")));
   }
 
   private void validateRegisterUserRequest(RegisterUserDTO dto) {
