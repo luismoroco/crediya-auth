@@ -1,6 +1,5 @@
 package com.crediya.auth.api;
 
-import com.crediya.auth.api.dto.RegisterUserServerRequest;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
