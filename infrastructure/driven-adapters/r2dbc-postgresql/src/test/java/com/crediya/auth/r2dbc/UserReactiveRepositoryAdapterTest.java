@@ -15,8 +15,6 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,15 +83,44 @@ class UserReactiveRepositoryAdapterTest {
 
     @Test
     void mustSaveValue() {
-        // TODO: Review weird behavior
         UserEntity entity = createEntity();
         User user = createUser();
 
-        when(mapper.map(any(UserEntity.class), eq(User.class))).thenReturn(user);
-        when(mapper.map(any(User.class), eq(UserEntity.class))).thenReturn(entity);
+        when(mapper.map(user, UserEntity.class)).thenReturn(entity);
+        when(mapper.map(entity, User.class)).thenReturn(user);
         when(repository.save(entity)).thenReturn(Mono.just(entity));
 
         Mono<User> result = repositoryAdapter.save(user);
+
+        StepVerifier.create(result)
+          .expectNextMatches(u -> u.getEmail().equals("john@example.com"))
+          .verifyComplete();
+    }
+
+    @Test
+    void mustVerifyWhetherValueExistsByEmail() {
+        String email = "john@example.com";
+
+        when(repository.existsByEmail(email)).thenReturn(Mono.just(Boolean.TRUE));
+
+        Mono<Boolean> result = repositoryAdapter.existsByEmail(email);
+
+        StepVerifier.create(result)
+          .expectNext(true)
+          .verifyComplete();
+    }
+
+    @Test
+    void mustFindValueByEmail() {
+        String email = "john@example.com";
+
+        UserEntity entity = createEntity();
+        User user = createUser();
+
+        when(repository.findByEmail(email)).thenReturn(Mono.just(entity));
+        when(mapper.map(entity, User.class)).thenReturn(user);
+
+        Mono<User> result = repositoryAdapter.findByEmail(email);
 
         StepVerifier.create(result)
           .expectNextMatches(u -> u.getEmail().equals("john@example.com"))
