@@ -27,7 +27,7 @@ public class UserUseCase {
   private final Logger logger;
 
   public Mono<User> registerUser(RegisterUserDTO dto) {
-    logger.info(String.format("Starting user registration [email=%s]", dto.getEmail()));
+    logger.info("Register User with {}", dto);
 
     return validateRegisterUserDTOConstraints(dto)
       .then(this.repository.existsByEmail(dto.getEmail()))
