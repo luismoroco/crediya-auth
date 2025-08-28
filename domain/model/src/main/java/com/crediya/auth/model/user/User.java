@@ -46,4 +46,24 @@ public class User {
   public UserRole getUserRole() {
     return UserRole.fromCode(this.userRoleId);
   }
+
+  @Getter
+  public enum Field {
+    USER_ROLE("User Role"),
+    FIRST_NAME("First Name"),
+    LAST_NAME("Last Name"),
+    EMAIL("Email"),
+    IDENTITY_CARD_NUMBER("Identity Card Number"),
+    PASSWORD("Password"),
+    PHONE_NUMBER("Phone Number"),
+    BASIC_WAGING("Basic Waging"),
+    BIRTH_DATE("Birth Date"),
+    ADDRESS("Address");
+
+    private final String label;
+
+    Field(String label) {
+      this.label = label;
+    }
+  }
 }
