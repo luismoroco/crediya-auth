@@ -14,6 +14,12 @@ public enum UserRole {
   }
 
   public static UserRole fromCode(int code) {
-    return code == 1 ? ADMIN : USER;
+    for (UserRole role : values()) {
+      if (role.getCode() == code) {
+        return role;
+      }
+    }
+
+    throw new IllegalArgumentException("Invalid UserRole code: " + code);
   }
 }
