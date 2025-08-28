@@ -57,7 +57,7 @@ public class UserUseCase {
       .switchIfEmpty(Mono.error(new NotFoundException(ErrorCode.ENTITY_NOT_FOUND.get(EMAIL.name(), email))));
   }
 
-  private static Mono<Void> validateRegisterUserDTOConstraints(RegisterUserDTO dto) {
+  public static Mono<Void> validateRegisterUserDTOConstraints(RegisterUserDTO dto) {
     return ValidatorUtils.string(FIRST_NAME.getLabel(), dto.getFirstName())
       .then(ValidatorUtils.string(LAST_NAME.getLabel(), dto.getLastName()))
       .then(ValidatorUtils.email(EMAIL.getLabel(), dto.getEmail()))
