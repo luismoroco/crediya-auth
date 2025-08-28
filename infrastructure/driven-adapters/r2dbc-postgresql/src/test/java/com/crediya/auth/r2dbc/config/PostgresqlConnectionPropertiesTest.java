@@ -16,7 +16,6 @@ class PostgresqlConnectionPropertiesTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
 
-    // Simulamos la inyección de propiedades
     properties = new PostgresqlConnectionProperties(
       "localhost",
       5432,
