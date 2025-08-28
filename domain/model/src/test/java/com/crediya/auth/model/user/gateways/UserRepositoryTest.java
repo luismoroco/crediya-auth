@@ -2,6 +2,7 @@ package com.crediya.auth.model.user.gateways;
 
 import com.crediya.auth.model.user.User;
 import com.crediya.auth.model.user.UserRole;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
