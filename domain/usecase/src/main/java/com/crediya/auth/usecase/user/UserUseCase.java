@@ -7,6 +7,7 @@ import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.ErrorCode;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
+import com.crediya.common.logging.Logger;
 import com.crediya.common.validation.ValidatorUtils;
 
 import static com.crediya.auth.model.user.User.Field.*;
@@ -23,12 +24,16 @@ public class UserUseCase {
   private static final long MAXIMUM_BASIC_WAGING = 15000000;
 
   private final UserRepository repository;
+  private final Logger logger;
 
   public Mono<User> registerUser(RegisterUserDTO dto) {
+    logger.info(String.format("Starting user registration [email=%s]", dto.getEmail()));
+
     return validateRegisterUserDTOConstraints(dto)
       .then(this.repository.existsByEmail(dto.getEmail()))
       .flatMap(userExists -> {
         if (Boolean.TRUE.equals(userExists)) {
+          logger.warn(String.format("Attempt to register already existing user [email=%s]", dto.getEmail()));
           return Mono.error(
             new ValidationException(
               ErrorCode.ENTITY_ALREADY_EXISTS.get(EMAIL.getLabel(), dto.getEmail())
@@ -47,14 +52,31 @@ public class UserUseCase {
         user.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         user.setAddress(dto.getAddress());
 
-        return this.repository.save(user);
+        return this.repository.save(user)
+          .doOnSuccess(saved ->
+            logger.info(String.format("User registered successfully [id=%s][email=%s]", saved.getUserId(), saved.getEmail()))
+          )
+          .doOnError(error ->
+            logger.error(String.format("Error registering user with [email=%s]", dto.getEmail()), error)
+          );
       });
   }
 
   public Mono<User> getUserByEmail(String email) {
+    logger.info(String.format("Fetching user by email [email=%s]", email));
+
     return ValidatorUtils.email("EMAIL", email)
       .then(this.repository.findByEmail(email))
-      .switchIfEmpty(Mono.error(new NotFoundException(ErrorCode.ENTITY_NOT_FOUND.get(EMAIL.name(), email))));
+      .switchIfEmpty(Mono.defer(() -> {
+        logger.warn(String.format("User not found [email=%s]", email));
+        return Mono.error(new NotFoundException(ErrorCode.ENTITY_NOT_FOUND.get(EMAIL.name(), email)));
+      }))
+      .doOnSuccess(user ->
+        logger.info(String.format("User found [id=%s][email=%s]", user.getUserId(), user.getEmail()))
+      )
+      .doOnError(error ->
+        logger.error(String.format("Error fetching user [email=%s]", email), error)
+      );
   }
 
   public static Mono<Void> validateRegisterUserDTOConstraints(RegisterUserDTO dto) {
