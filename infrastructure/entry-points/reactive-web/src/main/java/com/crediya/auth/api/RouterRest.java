@@ -27,6 +27,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RouterRest {
 
   private final Handler handler;
+  private final GlobalExceptionFilter filter;
 
   @RouterOperations({
     @RouterOperation(
@@ -71,9 +72,9 @@ public class RouterRest {
     )
   })
   @Bean
-  public RouterFunction<ServerResponse> routerFunction(GlobalExceptionFilter filter) {
-    return route(POST("/api/v1/users"), this.handler::listenPOSTRegisterUser)
-      .andRoute(GET("/api/v1/users/{email}"), this.handler::listenPOSTGetUserByEmail)
+  public RouterFunction<ServerResponse> routerFunction() {
+    return route(POST("/api/v1/users"), this.handler::registerUser)
+      .andRoute(GET("/api/v1/users/{email}"), this.handler::getUserByEmail)
       .filter(filter);
   }
 }

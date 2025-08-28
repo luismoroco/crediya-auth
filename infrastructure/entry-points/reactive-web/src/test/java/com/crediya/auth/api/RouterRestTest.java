@@ -60,8 +60,8 @@ class RouterRestTest {
   void setUp() {
     useCase = mock(UserUseCase.class);
     Handler handler = new Handler(useCase);
-    RouterFunction<?> routes = new RouterRest(handler)
-      .routerFunction(new GlobalExceptionFilter());
+    RouterFunction<?> routes = new RouterRest(handler, new GlobalExceptionFilter())
+      .routerFunction();
     webTestClient = WebTestClient.bindToRouterFunction(routes)
       .build();
   }

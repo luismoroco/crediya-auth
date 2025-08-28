@@ -17,7 +17,7 @@ public class Handler {
 
   private final UserUseCase useCase;
 
-  public Mono<ServerResponse> listenPOSTRegisterUser(ServerRequest serverRequest) {
+  public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
     return serverRequest.bodyToMono(RegisterUserDTO.class)
       .flatMap(this.useCase::registerUser)
       .flatMap(dto -> ServerResponse
@@ -27,7 +27,7 @@ public class Handler {
       );
   }
 
-  public Mono<ServerResponse> listenPOSTGetUserByEmail(ServerRequest serverRequest) {
+  public Mono<ServerResponse> getUserByEmail(ServerRequest serverRequest) {
     return this.useCase.getUserByEmail(serverRequest.pathVariable("email"))
       .flatMap(dto -> ServerResponse
         .status(HttpStatus.OK)
