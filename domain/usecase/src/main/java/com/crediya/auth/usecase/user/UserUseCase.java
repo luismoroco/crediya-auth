@@ -4,13 +4,12 @@ import com.crediya.auth.model.user.User;
 import com.crediya.auth.model.user.UserRole;
 import com.crediya.auth.model.user.gateways.UserRepository;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
-import com.crediya.common.ErrorCode;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
 import com.crediya.common.logging.Logger;
 import com.crediya.common.validation.ValidatorUtils;
-
 import static com.crediya.auth.model.user.User.Field.*;
+import static com.crediya.common.LogCatalog.*;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -27,17 +26,12 @@ public class UserUseCase {
   private final Logger logger;
 
   public Mono<User> registerUser(RegisterUserDTO dto) {
-    logger.info("Register User with {}", dto);
-
     return validateRegisterUserDTOConstraints(dto)
       .then(this.repository.existsByEmail(dto.getEmail()))
       .flatMap(userExists -> {
         if (Boolean.TRUE.equals(userExists)) {
-          logger.warn(String.format("Attempt to register already existing user [email=%s]", dto.getEmail()));
-          return Mono.error(
-            new ValidationException(
-              ErrorCode.ENTITY_ALREADY_EXISTS.get(EMAIL.getLabel(), dto.getEmail())
-            ));
+          this.logger.info(ENTITY_ALREADY_EXISTS.get(EMAIL.getLabel(), dto.getEmail()));
+          return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.get(EMAIL.getLabel(), dto.getEmail())));
         }
 
         User user = new User();
@@ -53,30 +47,20 @@ public class UserUseCase {
         user.setAddress(dto.getAddress());
 
         return this.repository.save(user)
-          .doOnSuccess(saved ->
-            logger.info(String.format("User registered successfully [id=%s][email=%s]", saved.getUserId(), saved.getEmail()))
-          )
-          .doOnError(error ->
-            logger.error(String.format("Error registering user with [email=%s]", dto.getEmail()), error)
-          );
+          .doOnSuccess(saved -> this.logger.info(SUCCESSFUL_PROCESSING.get("registerUser", user.getUserId())))
+          .doOnError(error -> this.logger.error(ERROR_PROCESSING.get("registerUser", user.getEmail()), error));
       });
   }
 
   public Mono<User> getUserByEmail(String email) {
-    logger.info(String.format("Fetching user by email [email=%s]", email));
-
-    return ValidatorUtils.email("EMAIL", email)
+    return ValidatorUtils.email(EMAIL.getLabel(), email)
       .then(this.repository.findByEmail(email))
       .switchIfEmpty(Mono.defer(() -> {
-        logger.warn(String.format("User not found [email=%s]", email));
-        return Mono.error(new NotFoundException(ErrorCode.ENTITY_NOT_FOUND.get(EMAIL.name(), email)));
+        this.logger.warn(ENTITY_NOT_FOUND.get(EMAIL.getLabel(), email));
+        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.get(EMAIL.name(), email)));
       }))
-      .doOnSuccess(user ->
-        logger.info(String.format("User found [id=%s][email=%s]", user.getUserId(), user.getEmail()))
-      )
-      .doOnError(error ->
-        logger.error(String.format("Error fetching user [email=%s]", email), error)
-      );
+      .doOnSuccess(user -> this.logger.info(SUCCESSFUL_PROCESSING.get("getUserByEmail", user.getUserId())))
+      .doOnError(error -> this.logger.error(ERROR_PROCESSING.get("getUserByEmail", email), error));
   }
 
   public static Mono<Void> validateRegisterUserDTOConstraints(RegisterUserDTO dto) {
