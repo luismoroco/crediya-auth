@@ -30,8 +30,8 @@ public class UserUseCase {
       .then(this.repository.existsByEmail(dto.getEmail()))
       .flatMap(userExists -> {
         if (Boolean.TRUE.equals(userExists)) {
-          this.logger.info(ENTITY_ALREADY_EXISTS.get(EMAIL.getLabel(), dto.getEmail()));
-          return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.get(EMAIL.getLabel(), dto.getEmail())));
+          this.logger.info(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail()));
+          return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail())));
         }
 
         User user = new User();
@@ -47,32 +47,32 @@ public class UserUseCase {
         user.setAddress(dto.getAddress());
 
         return this.repository.save(user)
-          .doOnSuccess(saved -> this.logger.info(SUCCESSFUL_PROCESSING.get("registerUser", user.getUserId())))
-          .doOnError(error -> this.logger.error(ERROR_PROCESSING.get("registerUser", user.getEmail()), error));
+          .doOnSuccess(saved -> this.logger.info(SUCCESSFUL_PROCESSING.of("registerUser", user.getUserId())))
+          .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("registerUser", user.getEmail()), error));
       });
   }
 
   public Mono<User> getUserByEmail(String email) {
-    return ValidatorUtils.email(EMAIL.getLabel(), email)
+    return ValidatorUtils.email(EMAIL, email)
       .then(this.repository.findByEmail(email))
       .switchIfEmpty(Mono.defer(() -> {
-        this.logger.warn(ENTITY_NOT_FOUND.get(EMAIL.getLabel(), email));
-        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.get(EMAIL.name(), email)));
+        this.logger.warn(ENTITY_NOT_FOUND.of(EMAIL, email));
+        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, email)));
       }))
-      .doOnSuccess(user -> this.logger.info(SUCCESSFUL_PROCESSING.get("getUserByEmail", user.getUserId())))
-      .doOnError(error -> this.logger.error(ERROR_PROCESSING.get("getUserByEmail", email), error));
+      .doOnSuccess(user -> this.logger.info(SUCCESSFUL_PROCESSING.of("getUserByEmail", user.getUserId())))
+      .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getUserByEmail", email), error));
   }
 
   public static Mono<Void> validateRegisterUserDTOConstraints(RegisterUserDTO dto) {
-    return ValidatorUtils.string(FIRST_NAME.getLabel(), dto.getFirstName())
-      .then(ValidatorUtils.string(LAST_NAME.getLabel(), dto.getLastName()))
-      .then(ValidatorUtils.email(EMAIL.getLabel(), dto.getEmail()))
-      .then(ValidatorUtils.string(IDENTITY_CARD_NUMBER.getLabel(), dto.getIdentityCardNumber()))
-      .then(ValidatorUtils.string(PASSWORD.getLabel(), dto.getPassword()))
-      .then(ValidatorUtils.phone(PHONE_NUMBER.getLabel(), dto.getPhoneNumber()))
-      .then(ValidatorUtils.string(ADDRESS.getLabel(), dto.getAddress()))
-      .then(ValidatorUtils.string(BIRTH_DATE.getLabel(), dto.getAddress()))
-      .then(ValidatorUtils.numberBetween(BASIC_WAGING.getLabel(), dto.getBasicWaging(), MINIMUM_BASIC_WAGING,
+    return ValidatorUtils.string(FIRST_NAME, dto.getFirstName())
+      .then(ValidatorUtils.string(LAST_NAME, dto.getLastName()))
+      .then(ValidatorUtils.email(EMAIL, dto.getEmail()))
+      .then(ValidatorUtils.string(IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber()))
+      .then(ValidatorUtils.string(PASSWORD, dto.getPassword()))
+      .then(ValidatorUtils.phone(PHONE_NUMBER, dto.getPhoneNumber()))
+      .then(ValidatorUtils.string(ADDRESS, dto.getAddress()))
+      .then(ValidatorUtils.localDate(BIRTH_DATE, dto.getBirthDate()))
+      .then(ValidatorUtils.numberBetween(BASIC_WAGING, dto.getBasicWaging(), MINIMUM_BASIC_WAGING,
         MAXIMUM_BASIC_WAGING));
   }
 }

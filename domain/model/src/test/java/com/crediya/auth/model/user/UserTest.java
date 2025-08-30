@@ -22,6 +22,7 @@ class UserTest {
     LocalDate birthDate = LocalDate.of(2000, 1, 1);
     User user = new User(
       1L,
+      1,
       "John",
       "Doe",
       "john@example.com",
@@ -29,7 +30,6 @@ class UserTest {
       "password",
       "999999999",
       1000L,
-      1,
       birthDate,
       "Street 123"
     );
@@ -58,16 +58,16 @@ class UserTest {
 
   @Test
   void testFieldEnumLabels() {
-    assertEquals("User Role", User.Field.USER_ROLE.getLabel());
-    assertEquals("First Name", User.Field.FIRST_NAME.getLabel());
-    assertEquals("Last Name", User.Field.LAST_NAME.getLabel());
-    assertEquals("Email", User.Field.EMAIL.getLabel());
-    assertEquals("Identity Card Number", User.Field.IDENTITY_CARD_NUMBER.getLabel());
-    assertEquals("Password", User.Field.PASSWORD.getLabel());
-    assertEquals("Phone Number", User.Field.PHONE_NUMBER.getLabel());
-    assertEquals("Basic Waging", User.Field.BASIC_WAGING.getLabel());
-    assertEquals("Birth Date", User.Field.BIRTH_DATE.getLabel());
-    assertEquals("Address", User.Field.ADDRESS.getLabel());
+    assertEquals("USER ROLE", User.Field.USER_ROLE.toString());
+    assertEquals("FIRST NAME", User.Field.FIRST_NAME.toString());
+    assertEquals("LAST NAME", User.Field.LAST_NAME.toString());
+    assertEquals("EMAIL", User.Field.EMAIL.toString());
+    assertEquals("IDENTITY CARD NUMBER", User.Field.IDENTITY_CARD_NUMBER.toString());
+    assertEquals("PASSWORD", User.Field.PASSWORD.toString());
+    assertEquals("PHONE NUMBER", User.Field.PHONE_NUMBER.toString());
+    assertEquals("BASIC WAGING", User.Field.BASIC_WAGING.toString());
+    assertEquals("BIRTH DATE", User.Field.BIRTH_DATE.toString());
+    assertEquals("ADDRESS", User.Field.ADDRESS.toString());
   }
 
   @Test
