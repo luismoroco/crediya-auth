@@ -2,6 +2,7 @@ package com.crediya.auth.api;
 
 import com.crediya.auth.usecase.user.UserUseCase;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
+import com.crediya.common.logging.aspect.AutomaticLogging;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ public class Handler {
 
   private final UserUseCase useCase;
 
+  @AutomaticLogging
   public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
     return serverRequest.bodyToMono(RegisterUserDTO.class)
       .flatMap(this.useCase::registerUser)
@@ -27,6 +29,7 @@ public class Handler {
       );
   }
 
+  @AutomaticLogging
   public Mono<ServerResponse> getUserByEmail(ServerRequest serverRequest) {
     return this.useCase.getUserByEmail(serverRequest.pathVariable("email"))
       .flatMap(dto -> ServerResponse

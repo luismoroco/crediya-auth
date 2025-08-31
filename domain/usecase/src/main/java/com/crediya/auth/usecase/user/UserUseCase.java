@@ -30,7 +30,7 @@ public class UserUseCase {
       .then(this.repository.existsByEmail(dto.getEmail()))
       .flatMap(userExists -> {
         if (Boolean.TRUE.equals(userExists)) {
-          this.logger.info(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail()));
+          this.logger.warn(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail()));
           return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail())));
         }
 
@@ -47,7 +47,6 @@ public class UserUseCase {
         user.setAddress(dto.getAddress());
 
         return this.repository.save(user)
-          .doOnSuccess(saved -> this.logger.info(SUCCESSFUL_PROCESSING.of("registerUser", user.getUserId())))
           .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("registerUser", user.getEmail()), error));
       });
   }
@@ -59,7 +58,6 @@ public class UserUseCase {
         this.logger.warn(ENTITY_NOT_FOUND.of(EMAIL, email));
         return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, email)));
       }))
-      .doOnSuccess(user -> this.logger.info(SUCCESSFUL_PROCESSING.of("getUserByEmail", user.getUserId())))
       .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getUserByEmail", email), error));
   }
 
