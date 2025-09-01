@@ -75,22 +75,22 @@ class UserUseCaseTest {
   }
 
   @Test
-  void testGetUserByEmailSuccess() {
+  void testGetUserByIdentityCardNumberSuccess() {
     User user = new User();
     user.setEmail("john@example.com");
 
     when(repository.findByEmail("john@example.com")).thenReturn(Mono.just(user));
 
-    StepVerifier.create(userUseCase.getUserByEmail("john@example.com"))
+    StepVerifier.create(userUseCase.getUserByIdentityCardNumber("john@example.com"))
       .expectNext(user)
       .verifyComplete();
   }
 
   @Test
-  void testGetUserByEmailNotFound() {
+  void testGetUserByIdentityCardNumberNotFound() {
     when(repository.findByEmail("notfound@example.com")).thenReturn(Mono.empty());
 
-    StepVerifier.create(userUseCase.getUserByEmail("notfound@example.com"))
+    StepVerifier.create(userUseCase.getUserByIdentityCardNumber("notfound@example.com"))
       .expectErrorMatches(throwable -> throwable instanceof NotFoundException &&
         throwable.getMessage().contains("not found"))
       .verify();

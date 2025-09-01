@@ -99,7 +99,7 @@ class RouterRestTest {
     User user = createUser();
     String email = user.getEmail();
 
-    when(useCase.getUserByEmail(email))
+    when(useCase.getUserByIdentityCardNumber(email))
       .thenReturn(Mono.just(user));
 
     webTestClient.get()
@@ -115,7 +115,7 @@ class RouterRestTest {
   void mustNotGetUserByEmail() {
     String email = "not-registered-user@example.com";
 
-    when(useCase.getUserByEmail(email))
+    when(useCase.getUserByIdentityCardNumber(email))
       .thenReturn(Mono.error(new NotFoundException("Invalid email")));
 
     webTestClient.post()

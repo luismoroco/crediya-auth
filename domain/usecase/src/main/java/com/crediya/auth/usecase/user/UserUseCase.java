@@ -27,6 +27,16 @@ public class UserUseCase {
 
   public Mono<User> registerUser(RegisterUserDTO dto) {
     return validateRegisterUserDTOConstraints(dto)
+      .then(this.repository.existsByIdentityCardNumber(dto.getIdentityCardNumber()))
+      .flatMap(identityCardNumberExists -> {
+        if (Boolean.TRUE.equals(identityCardNumberExists)) {
+          this.logger.warn(ENTITY_ALREADY_EXISTS.of(IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber()));
+          return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(
+            IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber())));
+        }
+
+        return Mono.empty();
+      })
       .then(this.repository.existsByEmail(dto.getEmail()))
       .flatMap(userExists -> {
         if (Boolean.TRUE.equals(userExists)) {
@@ -34,6 +44,9 @@ public class UserUseCase {
           return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail())));
         }
 
+        return Mono.empty();
+      })
+      .then(Mono.defer(() -> {
         User user = new User();
         user.setUserRole(UserRole.USER);
         user.setFirstName(dto.getFirstName());
@@ -46,19 +59,23 @@ public class UserUseCase {
         user.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         user.setAddress(dto.getAddress());
 
-        return this.repository.save(user)
-          .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("registerUser", user.getEmail()), error));
-      });
+        return this.repository.save(user);
+      }))
+      .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("registerUser", dto.getEmail()),
+        error)
+      );
   }
 
-  public Mono<User> getUserByEmail(String email) {
-    return ValidatorUtils.email(EMAIL, email)
-      .then(this.repository.findByEmail(email))
+  public Mono<User> getUserByIdentityCardNumber(String identityCardNumber) {
+    return ValidatorUtils.string(IDENTITY_CARD_NUMBER, identityCardNumber)
+      .then(this.repository.findByIdentityCardNumber(identityCardNumber))
       .switchIfEmpty(Mono.defer(() -> {
-        this.logger.warn(ENTITY_NOT_FOUND.of(EMAIL, email));
-        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, email)));
+        this.logger.warn(ENTITY_NOT_FOUND.of(IDENTITY_CARD_NUMBER, identityCardNumber));
+        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(IDENTITY_CARD_NUMBER, identityCardNumber)));
       }))
-      .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getUserByEmail", email), error));
+      .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getUserByIdentityCardNumber",
+        identityCardNumber), error)
+      );
   }
 
   public static Mono<Void> validateRegisterUserDTOConstraints(RegisterUserDTO dto) {

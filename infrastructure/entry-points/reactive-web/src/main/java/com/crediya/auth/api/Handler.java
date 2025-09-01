@@ -30,8 +30,8 @@ public class Handler {
   }
 
   @AutomaticLogging
-  public Mono<ServerResponse> getUserByEmail(ServerRequest serverRequest) {
-    return this.useCase.getUserByEmail(serverRequest.pathVariable("email"))
+  public Mono<ServerResponse> getUserByIdentityCardNumber(ServerRequest serverRequest) {
+    return this.useCase.getUserByIdentityCardNumber(serverRequest.pathVariable("identity_card_number"))
       .flatMap(dto -> ServerResponse
         .status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)

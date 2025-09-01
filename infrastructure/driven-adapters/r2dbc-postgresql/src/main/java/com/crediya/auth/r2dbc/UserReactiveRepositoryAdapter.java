@@ -36,4 +36,13 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         return this.repository.findByEmail(email).map(this::toEntity);
     }
 
+    @Override
+    public Mono<User> findByIdentityCardNumber(String identityCardNumber) {
+        return this.repository.findByIdentityCardNumber(identityCardNumber).map(this::toEntity);
+    }
+
+    @Override
+    public Mono<Boolean> existsByIdentityCardNumber(String identityCardNumber) {
+        return this.repository.existsByIdentityCardNumber(identityCardNumber);
+    }
 }

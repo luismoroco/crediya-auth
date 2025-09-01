@@ -66,15 +66,15 @@ class HandlerTest {
   }
 
   @Test
-  void testGetUserByEmail() {
+  void testGetUserByIdentityCardNumber() {
     String email = "john@example.com";
     User user = new User(1L, "John", "Doe", email, "12345",
       "pass", "999999999", 1000L, 2, java.time.LocalDate.parse("2000-01-01"), "Street 123");
 
     when(serverRequest.pathVariable("email")).thenReturn(email);
-    when(useCase.getUserByEmail(email)).thenReturn(Mono.just(user));
+    when(useCase.getUserByIdentityCardNumber(email)).thenReturn(Mono.just(user));
 
-    Mono<ServerResponse> responseMono = handler.getUserByEmail(serverRequest);
+    Mono<ServerResponse> responseMono = handler.getUserByIdentityCardNumber(serverRequest);
 
     StepVerifier.create(responseMono)
       .assertNext(response -> {
