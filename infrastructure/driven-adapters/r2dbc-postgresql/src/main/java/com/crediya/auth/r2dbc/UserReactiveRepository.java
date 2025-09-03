@@ -21,7 +21,8 @@ public interface UserReactiveRepository extends ReactiveCrudRepository<UserEntit
   Mono<Boolean> existsByIdentityCardNumber(String identityCardNumber);
 
   @Query("" +
-    "SELECT * FROM users " +
+    "SELECT * " +
+    "FROM users " +
     "WHERE " +
       "identity_card_number IN (:identity_card_numbers)"
   )
