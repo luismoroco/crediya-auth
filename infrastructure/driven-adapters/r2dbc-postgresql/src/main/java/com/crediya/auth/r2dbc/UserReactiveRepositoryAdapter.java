@@ -7,7 +7,10 @@ import com.crediya.auth.r2dbc.helper.ReactiveAdapterOperations;
 
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Repository
 public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
@@ -44,5 +47,10 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     @Override
     public Mono<Boolean> existsByIdentityCardNumber(String identityCardNumber) {
         return this.repository.existsByIdentityCardNumber(identityCardNumber);
+    }
+
+    @Override
+    public Flux<User> findUsers(List<String> identityCardNumbers) {
+        return this.repository.findUsers(identityCardNumbers).map(this::toEntity);
     }
 }

@@ -3,6 +3,7 @@ package com.crediya.auth.usecase.user;
 import com.crediya.auth.model.user.User;
 import com.crediya.auth.model.user.UserRole;
 import com.crediya.auth.model.user.gateways.UserRepository;
+import com.crediya.auth.usecase.user.dto.GetUsersDTO;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
@@ -12,6 +13,7 @@ import static com.crediya.auth.model.user.User.Field.*;
 import static com.crediya.common.LogCatalog.*;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -76,6 +78,19 @@ public class UserUseCase {
       .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getUserByIdentityCardNumber",
         identityCardNumber), error)
       );
+  }
+
+  public Flux<User> getUsers(GetUsersDTO dto) {
+    return validateGetUsersDTOConstraints(dto)
+      .thenMany(this.repository.findUsers(dto.getIdentityCardNumbers()))
+      .switchIfEmpty(Flux.defer(() -> {
+        this.logger.warn(ENTITY_NOT_FOUND.of("Users", dto));
+        return Flux.empty();
+      }));
+  }
+
+  public static Mono<Void> validateGetUsersDTOConstraints(GetUsersDTO dto) {
+    return ValidatorUtils.nonNull("IDENTITY CARD NUMBERS", dto.getIdentityCardNumbers());
   }
 
   public static Mono<Void> validateRegisterUserDTOConstraints(RegisterUserDTO dto) {

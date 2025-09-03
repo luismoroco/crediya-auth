@@ -75,6 +75,7 @@ public class RouterRest {
   public RouterFunction<ServerResponse> routerFunction() {
     return route(POST("/api/v1/users"), this.handler::registerUser)
       .andRoute(GET("/api/v1/users/{identity_card_number}"), this.handler::getUserByIdentityCardNumber)
+      .andRoute(GET("/api/v1/users"), this.handler::getUsers)
       .filter(filter);
   }
 }
