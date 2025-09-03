@@ -24,7 +24,7 @@ public interface UserReactiveRepository extends ReactiveCrudRepository<UserEntit
     "SELECT * " +
     "FROM users " +
     "WHERE " +
-      "identity_card_number IN (:identity_card_numbers)"
+      "email IN (:identity_card_numbers)" // Update this hack
   )
   Flux<UserEntity> findUsers(@Param("identity_card_numbers") List<String> identityCardNumbers);
 }
