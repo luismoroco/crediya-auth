@@ -49,7 +49,7 @@ class UserUseCaseTest {
     StepVerifier.create(userUseCase.registerUser(dto))
       .assertNext(user -> {
         assert user.getFirstName().equals("John");
-        assert user.getUserRole() == UserRole.USER;
+        assert user.getUserRole() == UserRole.CUSTOMER;
         assert user.getBasicWaging() == 1000L;
       })
       .verifyComplete();

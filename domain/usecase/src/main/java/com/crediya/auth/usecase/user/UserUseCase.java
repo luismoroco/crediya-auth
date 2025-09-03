@@ -50,7 +50,7 @@ public class UserUseCase {
       })
       .then(Mono.defer(() -> {
         User user = new User();
-        user.setUserRole(UserRole.USER);
+        user.setUserRole(UserRole.CUSTOMER);
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());

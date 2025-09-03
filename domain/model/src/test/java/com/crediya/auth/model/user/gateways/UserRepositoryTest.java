@@ -24,12 +24,12 @@ class UserRepositoryTest {
   void testFindByUserId() {
     User user = new User();
     user.setUserId(1L);
-    user.setUserRole(UserRole.USER);
+    user.setUserRole(UserRole.CUSTOMER);
 
     when(userRepository.findByUserId(1L)).thenReturn(Mono.just(user));
 
     StepVerifier.create(userRepository.findByUserId(1L))
-      .expectNextMatches(u -> u.getUserId().equals(1L) && u.getUserRole() == UserRole.USER)
+      .expectNextMatches(u -> u.getUserId().equals(1L) && u.getUserRole() == UserRole.CUSTOMER)
       .verifyComplete();
 
     verify(userRepository, times(1)).findByUserId(1L);

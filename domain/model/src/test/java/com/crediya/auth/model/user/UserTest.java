@@ -50,10 +50,10 @@ class UserTest {
   @Test
   void testUserRoleSetterAndGetter() {
     User user = new User();
-    user.setUserRole(UserRole.USER);
+    user.setUserRole(UserRole.CUSTOMER);
 
-    assertEquals(UserRole.USER.getCode(), user.getUserRoleId());
-    assertEquals(UserRole.USER, user.getUserRole());
+    assertEquals(UserRole.CUSTOMER.getCode(), user.getUserRoleId());
+    assertEquals(UserRole.CUSTOMER, user.getUserRole());
   }
 
   @Test

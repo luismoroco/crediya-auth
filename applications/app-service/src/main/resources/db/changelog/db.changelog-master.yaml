@@ -44,8 +44,8 @@ databaseChangeLog:
             dbms: postgresql
             sql: |
               INSERT INTO user_roles(user_role_id, name, description)
-              VALUES (1, 'MANAGER', 'Manager'),
-                     (2, 'CLIENT', 'Client');
+              VALUES (1, 'ADVISOR', 'Advisor'),
+                     (2, 'CUSTOMER', 'Customer');
 
         - createTable:
             tableName: users

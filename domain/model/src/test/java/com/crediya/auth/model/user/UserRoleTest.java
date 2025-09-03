@@ -8,14 +8,14 @@ class UserRoleTest {
 
   @Test
   void testGetCode() {
-    assertEquals(1, UserRole.ADMIN.getCode());
-    assertEquals(2, UserRole.USER.getCode());
+    assertEquals(1, UserRole.ADVISOR.getCode());
+    assertEquals(2, UserRole.CUSTOMER.getCode());
   }
 
   @Test
   void testFromCodeValid() {
-    assertEquals(UserRole.ADMIN, UserRole.fromCode(1));
-    assertEquals(UserRole.USER, UserRole.fromCode(2));
+    assertEquals(UserRole.ADVISOR, UserRole.fromCode(1));
+    assertEquals(UserRole.CUSTOMER, UserRole.fromCode(2));
   }
 
   @Test
