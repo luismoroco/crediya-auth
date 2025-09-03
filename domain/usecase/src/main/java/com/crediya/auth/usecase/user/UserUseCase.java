@@ -2,9 +2,13 @@ package com.crediya.auth.usecase.user;
 
 import com.crediya.auth.model.user.User;
 import com.crediya.auth.model.user.UserRole;
+import com.crediya.auth.model.user.gateways.JwtProvider;
+import com.crediya.auth.model.user.gateways.PasswordEncoder;
 import com.crediya.auth.model.user.gateways.UserRepository;
 import com.crediya.auth.usecase.user.dto.GetUsersDTO;
+import com.crediya.auth.usecase.user.dto.LogInDTO;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
+import com.crediya.auth.usecase.user.exc.InvalidCredentialsException;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
 import com.crediya.common.logging.Logger;
@@ -24,6 +28,8 @@ public class UserUseCase {
   private static final long MINIMUM_BASIC_WAGING = 0;
   private static final long MAXIMUM_BASIC_WAGING = 15000000;
 
+  private final JwtProvider jwtProvider;
+  private final PasswordEncoder passwordEncoder;
   private final UserRepository repository;
   private final Logger logger;
 
@@ -87,6 +93,28 @@ public class UserUseCase {
         this.logger.warn(ENTITY_NOT_FOUND.of("Users", dto));
         return Flux.empty();
       }));
+  }
+
+  public Mono<String> logIn(LogInDTO dto) {
+    return validateLoginDTOConstraints(dto)
+      .then(this.repository.findByEmail(dto.getEmail()))
+      .switchIfEmpty(Mono.defer(() -> {
+        this.logger.warn(ENTITY_NOT_FOUND.of(EMAIL, dto.getEmail()));
+        return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, dto.getEmail())));
+      }))
+      .flatMap(user -> {
+        if (!this.passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+          this.logger.warn(INVALID_PARAMETER.of(PASSWORD, dto.getPassword()));
+          return Mono.error(new InvalidCredentialsException(INVALID_PARAMETER.of(PASSWORD, dto.getPassword())));
+        }
+
+        return Mono.just(this.jwtProvider.generate(user));
+      });
+  }
+
+  public static Mono<Void> validateLoginDTOConstraints(LogInDTO dto) {
+    return ValidatorUtils.string(EMAIL, dto.getEmail())
+      .then(ValidatorUtils.string(PASSWORD, dto.getPassword()));
   }
 
   public static Mono<Void> validateGetUsersDTOConstraints(GetUsersDTO dto) {

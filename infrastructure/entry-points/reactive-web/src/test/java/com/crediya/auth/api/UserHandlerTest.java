@@ -19,10 +19,10 @@ import reactor.test.StepVerifier;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-class HandlerTest {
+class UserHandlerTest {
 
   @InjectMocks
-  private Handler handler;
+  private UserHandler userHandler;
 
   @Mock
   private UserUseCase useCase;
@@ -55,7 +55,7 @@ class HandlerTest {
     when(serverRequest.bodyToMono(RegisterUserDTO.class)).thenReturn(Mono.just(dto));
     when(useCase.registerUser(any(RegisterUserDTO.class))).thenReturn(Mono.just(user));
 
-    Mono<ServerResponse> responseMono = handler.registerUser(serverRequest);
+    Mono<ServerResponse> responseMono = userHandler.registerUser(serverRequest);
 
     StepVerifier.create(responseMono)
       .assertNext(response -> {
@@ -74,7 +74,7 @@ class HandlerTest {
     when(serverRequest.pathVariable("email")).thenReturn(email);
     when(useCase.getUserByIdentityCardNumber(email)).thenReturn(Mono.just(user));
 
-    Mono<ServerResponse> responseMono = handler.getUserByIdentityCardNumber(serverRequest);
+    Mono<ServerResponse> responseMono = userHandler.getUserByIdentityCardNumber(serverRequest);
 
     StepVerifier.create(responseMono)
       .assertNext(response -> {

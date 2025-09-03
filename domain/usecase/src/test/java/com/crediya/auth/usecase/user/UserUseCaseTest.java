@@ -2,6 +2,8 @@ package com.crediya.auth.usecase.user;
 
 import com.crediya.auth.model.user.User;
 import com.crediya.auth.model.user.UserRole;
+import com.crediya.auth.model.user.gateways.JwtProvider;
+import com.crediya.auth.model.user.gateways.PasswordEncoder;
 import com.crediya.auth.model.user.gateways.UserRepository;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.exc.NotFoundException;
@@ -21,12 +23,16 @@ class UserUseCaseTest {
   private Logger logger;
   private UserRepository repository;
   private UserUseCase userUseCase;
+  private PasswordEncoder PasswordEncoder;
+  private JwtProvider jwtProvider;
 
   @BeforeEach
   void setUp() {
     repository = Mockito.mock(UserRepository.class);
     logger = Mockito.mock(Logger.class);
-    userUseCase = new UserUseCase(repository, logger);
+    PasswordEncoder = Mockito.mock(PasswordEncoder.class);
+    jwtProvider = Mockito.mock(JwtProvider.class);
+    userUseCase = new UserUseCase(jwtProvider, PasswordEncoder, repository, logger);
   }
 
   @Test

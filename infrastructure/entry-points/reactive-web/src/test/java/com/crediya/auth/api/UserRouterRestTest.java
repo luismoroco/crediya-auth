@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class RouterRestTest {
+class UserRouterRestTest {
 
   private UserUseCase useCase;
   private WebTestClient webTestClient;
@@ -59,9 +59,9 @@ class RouterRestTest {
   @BeforeEach
   void setUp() {
     useCase = mock(UserUseCase.class);
-    Handler handler = new Handler(useCase);
-    RouterFunction<?> routes = new RouterRest(handler, new GlobalExceptionFilter())
-      .routerFunction();
+    UserHandler userHandler = new UserHandler(useCase);
+    RouterFunction<?> routes = new UserRouterRest(userHandler, new GlobalExceptionFilter())
+      .userRouterFunction();
     webTestClient = WebTestClient.bindToRouterFunction(routes)
       .build();
   }

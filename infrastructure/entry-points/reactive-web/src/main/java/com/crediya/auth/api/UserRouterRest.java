@@ -24,16 +24,16 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 
 @Configuration
 @RequiredArgsConstructor
-public class RouterRest {
+public class UserRouterRest {
 
-  private final Handler handler;
+  private final UserHandler handler;
   private final GlobalExceptionFilter filter;
 
   @RouterOperations({
     @RouterOperation(
       path = "/api/v1/users",
       produces = { "application/json" },
-      beanClass = Handler.class,
+      beanClass = UserHandler.class,
       method = RequestMethod.POST,
       beanMethod = "listenPOSTRegisterUser",
       operation = @Operation(
@@ -72,7 +72,7 @@ public class RouterRest {
     )
   })
   @Bean
-  public RouterFunction<ServerResponse> routerFunction() {
+  public RouterFunction<ServerResponse> userRouterFunction() {
     return route(POST("/api/v1/users"), this.handler::registerUser)
       .andRoute(GET("/api/v1/users/{identity_card_number}"), this.handler::getUserByIdentityCardNumber)
       .andRoute(GET("/api/v1/users"), this.handler::getUsers)

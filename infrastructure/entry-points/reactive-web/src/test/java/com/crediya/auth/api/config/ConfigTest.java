@@ -1,19 +1,13 @@
 package com.crediya.auth.api.config;
 
-import com.crediya.auth.api.Handler;
-import com.crediya.auth.api.RouterRest;
-import com.crediya.auth.usecase.user.UserUseCase;
-import com.crediya.common.api.handling.GlobalExceptionFilter;
+import com.crediya.auth.api.UserHandler;
+import com.crediya.auth.api.UserRouterRest;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
+@ContextConfiguration(classes = {UserRouterRest.class, UserHandler.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
 class ConfigTest {

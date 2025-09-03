@@ -24,8 +24,8 @@ public class RegisterUserDTO {
     return String.format(
       "[firstName=%s][lastName=%s][email=%s][identityCardNumber=%s][password=%s][phoneNumber=%s][basicWaging=%s]" +
         "[birthDate=%s][address=%s]",
-      firstName, lastName, email, identityCardNumber, password,
-      phoneNumber, basicWaging, birthDate, address
+      this.firstName, this.lastName, this.email, this.identityCardNumber, this.password,
+      this.phoneNumber, this.basicWaging, this.birthDate, this.address
     );
   }
 }

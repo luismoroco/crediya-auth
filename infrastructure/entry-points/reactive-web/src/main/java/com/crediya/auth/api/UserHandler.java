@@ -8,6 +8,7 @@ import com.crediya.common.logging.aspect.AutomaticLogging;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -18,11 +19,12 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class Handler {
+public class UserHandler {
 
   private final UserUseCase useCase;
 
   @AutomaticLogging
+  @PreAuthorize("hasRole('ADVISOR')")
   public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
     return serverRequest.bodyToMono(RegisterUserDTO.class)
       .flatMap(this.useCase::registerUser)
