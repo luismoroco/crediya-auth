@@ -48,7 +48,7 @@ public class Handler {
     MultiValueMap<String, String> queryParams = serverRequest.queryParams();
 
     GetUsersDTO request = GetUsersDTO.builder()
-      .identityCardNumbers(queryParams.getOrDefault("identity_card_numbers", null))
+      .identityCardNumbers(queryParams.getOrDefault("identity_card_numbers", List.of()))
       .build();
 
     return this.useCase.getUsers(request)
