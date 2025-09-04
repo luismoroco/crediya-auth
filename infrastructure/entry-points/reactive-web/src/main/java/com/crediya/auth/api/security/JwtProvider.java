@@ -9,12 +9,9 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.logging.Logger;
 
 @Component
 public class JwtProvider implements com.crediya.auth.model.user.gateways.JwtProvider {
-
-  private static final Logger LOGGER =  Logger.getLogger(JwtProvider.class.getName());
 
   @Value("${jwt.secret}")
   private String secret;
@@ -40,6 +37,7 @@ public class JwtProvider implements com.crediya.auth.model.user.gateways.JwtProv
       .setSubject(user.getEmail())
       .claim("userId", user.getUserId())
       .claim("role", user.getUserRole().name())
+      .claim("identityCardNumber", user.getIdentityCardNumber())
       .setIssuedAt(new Date())
       .setExpiration(new Date(System.currentTimeMillis() + expiration))
       .signWith(getKey(secret), SignatureAlgorithm.HS256)

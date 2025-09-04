@@ -30,8 +30,18 @@ public class SecurityConfig {
   public SecurityWebFilterChain filterChain(ServerHttpSecurity http, JwtFilter jwtFilter) {
     return http
       .csrf(ServerHttpSecurity.CsrfSpec::disable)
-      .authorizeExchange(exchangeSpec -> exchangeSpec.pathMatchers(PUBLIC_URLS).permitAll()
-        .anyExchange().authenticated())
+      .authorizeExchange(exchange -> exchange
+        .anyExchange().permitAll()
+      )
+//      .authorizeExchange(exchange -> exchange
+//        .pathMatchers(
+//          "/api/v1/auth/log-in",
+//          "/api/v1/auth/sign-up",
+//          "/api/v1/users",
+//          "/api/v1/users/**"
+//        ).permitAll()
+//        .anyExchange().authenticated()
+//      )
       .addFilterAfter(jwtFilter, SecurityWebFiltersOrder.FIRST)
       .securityContextRepository(securityContextRepository)
       .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
