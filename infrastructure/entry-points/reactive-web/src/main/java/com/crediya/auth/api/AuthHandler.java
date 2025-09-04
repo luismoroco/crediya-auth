@@ -1,5 +1,6 @@
 package com.crediya.auth.api;
 
+import com.crediya.auth.api.dto.AuthToken;
 import com.crediya.auth.usecase.user.UserUseCase;
 import com.crediya.auth.usecase.user.dto.LogInDTO;
 import com.crediya.common.logging.aspect.AutomaticLogging;
@@ -25,7 +26,11 @@ public class AuthHandler {
       .flatMap(dto -> ServerResponse
         .status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(dto)
+        .bodyValue(
+          AuthToken.builder()
+          .token(dto)
+          .build()
+        )
       );
   }
 }

@@ -27,6 +27,7 @@ public class UserUseCase {
 
   private static final long MINIMUM_BASIC_WAGING = 0;
   private static final long MAXIMUM_BASIC_WAGING = 15000000;
+  private static final String IDENTITY_CARD_NUMBERS = "identityCardNumbers";
 
   private final JwtProvider jwtProvider;
   private final PasswordEncoder passwordEncoder;
@@ -38,9 +39,8 @@ public class UserUseCase {
       .then(this.repository.existsByIdentityCardNumber(dto.getIdentityCardNumber()))
       .flatMap(identityCardNumberExists -> {
         if (Boolean.TRUE.equals(identityCardNumberExists)) {
-          this.logger.warn(ENTITY_ALREADY_EXISTS.of(IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber()));
-          return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(
-            IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber())));
+          this.logger.error("User identity card number already exists [identityCardNumber={}]", dto.getIdentityCardNumber());
+          return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber())));
         }
 
         return Mono.empty();
@@ -48,7 +48,7 @@ public class UserUseCase {
       .then(this.repository.existsByEmail(dto.getEmail()))
       .flatMap(userExists -> {
         if (Boolean.TRUE.equals(userExists)) {
-          this.logger.warn(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail()));
+          this.logger.error("User email already exists [email={}]", dto.getEmail());
           return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail())));
         }
 
@@ -69,47 +69,45 @@ public class UserUseCase {
 
         return this.repository.save(user);
       }))
-      .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("registerUser", dto.getEmail()),
-        error)
-      );
+      .doOnError(error -> this.logger.error("Error registering user [args={}][error={}]", dto, error));
   }
 
   public Mono<User> getUserByIdentityCardNumber(String identityCardNumber) {
     return ValidatorUtils.string(IDENTITY_CARD_NUMBER, identityCardNumber)
       .then(this.repository.findByIdentityCardNumber(identityCardNumber))
       .switchIfEmpty(Mono.defer(() -> {
-        this.logger.warn(ENTITY_NOT_FOUND.of(IDENTITY_CARD_NUMBER, identityCardNumber));
+        this.logger.error("User identity card number not found [identityCardNumber={}]", identityCardNumber);
         return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(IDENTITY_CARD_NUMBER, identityCardNumber)));
       }))
-      .doOnError(error -> this.logger.error(ERROR_PROCESSING.of("getUserByIdentityCardNumber",
-        identityCardNumber), error)
-      );
+      .doOnError(error -> this.logger.error("Error finding user [identityCardNumber={}][error={}]", identityCardNumber, error.getMessage()));
   }
 
   public Flux<User> getUsers(GetUsersDTO dto) {
     return validateGetUsersDTOConstraints(dto)
       .thenMany(this.repository.findUsers(dto.getIdentityCardNumbers()))
       .switchIfEmpty(Flux.defer(() -> {
-        this.logger.warn(ENTITY_NOT_FOUND.of("Users", dto));
+        this.logger.warn("No users found [args={}]", dto);
         return Flux.empty();
-      }));
+      }))
+      .doOnError(error -> this.logger.error("Error finding users [args={}][error={}]", dto, error.getMessage()));
   }
 
   public Mono<String> logIn(LogInDTO dto) {
     return validateLoginDTOConstraints(dto)
       .then(this.repository.findByEmail(dto.getEmail()))
       .switchIfEmpty(Mono.defer(() -> {
-        this.logger.warn(ENTITY_NOT_FOUND.of(EMAIL, dto.getEmail()));
+        this.logger.error("User email not found [email={}]", dto.getEmail());
         return Mono.error(new NotFoundException(ENTITY_NOT_FOUND.of(EMAIL, dto.getEmail())));
       }))
       .flatMap(user -> {
         if (!this.passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-          this.logger.warn(INVALID_PARAMETER.of(PASSWORD, dto.getPassword()));
+          this.logger.error("Password does not match [password={}][encodedPassword={}]", dto.getPassword(), user.getPassword());
           return Mono.error(new InvalidCredentialsException(INVALID_PARAMETER.of(PASSWORD, dto.getPassword())));
         }
 
         return Mono.just(this.jwtProvider.generate(user));
-      });
+      })
+      .doOnError(error -> this.logger.error("Error logging in an user [args={}][error={}]", dto, error.getMessage()));
   }
 
   public static Mono<Void> validateLoginDTOConstraints(LogInDTO dto) {
@@ -118,7 +116,7 @@ public class UserUseCase {
   }
 
   public static Mono<Void> validateGetUsersDTOConstraints(GetUsersDTO dto) {
-    return ValidatorUtils.nonNull("IDENTITY CARD NUMBERS", dto.getIdentityCardNumbers());
+    return ValidatorUtils.nonNull(IDENTITY_CARD_NUMBERS, dto.getIdentityCardNumbers());
   }
 
   public static Mono<Void> validateRegisterUserDTOConstraints(RegisterUserDTO dto) {
