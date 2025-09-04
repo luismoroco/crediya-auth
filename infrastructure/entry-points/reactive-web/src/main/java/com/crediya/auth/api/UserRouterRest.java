@@ -1,5 +1,6 @@
 package com.crediya.auth.api;
 
+import com.crediya.auth.api.config.RouterPathProperties;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
@@ -32,6 +33,7 @@ public class UserRouterRest {
 
   private final UserHandler handler;
   private final GlobalExceptionFilter filter;
+  private final RouterPathProperties pathProperties;
 
   @RouterOperations({
     @RouterOperation(
@@ -128,9 +130,11 @@ public class UserRouterRest {
   })
   @Bean
   public RouterFunction<ServerResponse> userRouterFunction() {
-    return route(POST("/api/v1/users"), this.handler::registerUser)
-      .andRoute(GET("/api/v1/users/{identity_card_number}"), this.handler::getUserByIdentityCardNumber)
-      .andRoute(GET("/api/v1/users"), this.handler::getUsers)
+    RouterPathProperties.UserPath userPath = pathProperties.getUser();
+
+    return route(POST(userPath.getRegisterUser()), this.handler::registerUser)
+      .andRoute(GET(userPath.getGetUserByIdentityCardNumber()), this.handler::getUserByIdentityCardNumber)
+      .andRoute(GET(userPath.getGetUsers()), this.handler::getUsers)
       .filter(filter);
   }
 }

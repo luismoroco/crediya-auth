@@ -1,5 +1,6 @@
 package com.crediya.auth.api;
 
+import com.crediya.auth.api.config.RouterPathProperties;
 import com.crediya.auth.usecase.user.dto.LogInDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +27,7 @@ public class AuthRouterRest {
 
   private final AuthHandler handler;
   private final GlobalExceptionFilter filter;
+  private final RouterPathProperties pathProperties;
 
   @RouterOperations({
     @RouterOperation(
@@ -64,7 +66,9 @@ public class AuthRouterRest {
   })
   @Bean
   public RouterFunction<ServerResponse> authRouterFunction() {
-    return route(POST("/api/v1/auth/log-in"), this.handler::logIn)
+    RouterPathProperties.AuthPath authPath = pathProperties.getAuth();
+
+    return route(POST(authPath.getLogin()), this.handler::logIn)
       .filter(filter);
   }
 }

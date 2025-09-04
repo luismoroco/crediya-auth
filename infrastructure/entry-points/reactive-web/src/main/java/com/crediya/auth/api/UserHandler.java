@@ -17,9 +17,13 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.crediya.auth.usecase.user.UserUseCase.IDENTITY_CARD_NUMBERS;
+
 @Component
 @RequiredArgsConstructor
 public class UserHandler {
+
+  private static final String IDENTITY_CARD_NUMBER = "identity_card_number";
 
   private final UserUseCase useCase;
 
@@ -37,7 +41,7 @@ public class UserHandler {
 
   @AutomaticLogging
   public Mono<ServerResponse> getUserByIdentityCardNumber(ServerRequest serverRequest) {
-    return this.useCase.getUserByIdentityCardNumber(serverRequest.pathVariable("identity_card_number"))
+    return this.useCase.getUserByIdentityCardNumber(serverRequest.pathVariable(IDENTITY_CARD_NUMBER))
       .flatMap(dto -> ServerResponse
         .status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
@@ -50,7 +54,7 @@ public class UserHandler {
     MultiValueMap<String, String> queryParams = serverRequest.queryParams();
 
     GetUsersDTO request = GetUsersDTO.builder()
-      .identityCardNumbers(queryParams.getOrDefault("identity_card_numbers", List.of()))
+      .identityCardNumbers(queryParams.getOrDefault(IDENTITY_CARD_NUMBERS, List.of()))
       .build();
 
     return this.useCase.getUsers(request)

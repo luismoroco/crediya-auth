@@ -27,7 +27,7 @@ public class UserUseCase {
 
   private static final long MINIMUM_BASIC_WAGING = 0;
   private static final long MAXIMUM_BASIC_WAGING = 15000000;
-  private static final String IDENTITY_CARD_NUMBERS = "identityCardNumbers";
+  public static final String IDENTITY_CARD_NUMBERS = "identity_card_numbers";
 
   private final JwtProvider jwtProvider;
   private final PasswordEncoder passwordEncoder;
