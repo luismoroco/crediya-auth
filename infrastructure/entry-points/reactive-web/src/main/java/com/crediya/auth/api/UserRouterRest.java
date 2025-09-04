@@ -4,11 +4,15 @@ import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
@@ -35,10 +39,11 @@ public class UserRouterRest {
       produces = { "application/json" },
       beanClass = UserHandler.class,
       method = RequestMethod.POST,
-      beanMethod = "listenPOSTRegisterUser",
+      beanMethod = "registerUser",
       operation = @Operation(
         operationId = "registerUser",
         summary = "Register new user",
+        security = @SecurityRequirement(name = "bearerAuth"),
         requestBody = @RequestBody(
           required = true,
           content = @Content(
@@ -46,7 +51,7 @@ public class UserRouterRest {
             schema = @Schema(implementation = RegisterUserDTO.class),
             examples = {
               @ExampleObject(
-                name = "Example",
+                name = "Create new user",
                 value = """
                                   {
                                     "firstName": "Juan",
@@ -54,7 +59,7 @@ public class UserRouterRest {
                                     "email": "juan.perez@correo.com",
                                     "identityCardNumber": "87654321",
                                     "password": "Secr3tPass!",
-                                    "phoneNumber": "51987654321",
+                                    "phoneNumber": "960329458",
                                     "basicWaging": 3500,
                                     "address": "Av. Simp",
                                     "birthDate": "2000-08-24"
@@ -64,6 +69,56 @@ public class UserRouterRest {
             }
           )
         ),
+        responses = {
+          @ApiResponse(responseCode = "200", description = "OK"),
+          @ApiResponse(responseCode = "400", description = "Bad Request")
+        }
+      )
+    ),
+    @RouterOperation(
+      path = "/api/v1/users/{identity_card_number}",
+      produces = { "application/json" },
+      beanClass = UserHandler.class,
+      method = RequestMethod.GET,
+      beanMethod = "getUserByIdentityCardNumber",
+      operation = @Operation(
+        operationId = "getUserByIdentityCardNumber",
+        summary = "Get user by identity card number",
+        parameters = {
+          @Parameter(
+            name = "identity_card_number",
+            in = ParameterIn.PATH,
+            required = true,
+            description = "User's identity card number",
+            schema = @Schema(type = "string", example = "87654321")
+          )
+        },
+        responses = {
+          @ApiResponse(responseCode = "200", description = "OK"),
+          @ApiResponse(responseCode = "400", description = "Bad Request"),
+          @ApiResponse(responseCode = "404", description = "User not found")
+        }
+      )
+    ),
+    @RouterOperation(
+      path = "/api/v1/users",
+      produces = { "application/json" },
+      beanClass = UserHandler.class,
+      method = RequestMethod.GET,
+      beanMethod = "getUsers",
+      operation = @Operation(
+        operationId = "getUsers",
+        summary = "Get users",
+        parameters = {
+          @Parameter(
+            name = "identity_card_numbers",
+            in = ParameterIn.QUERY,
+            required = true,
+            description = "Users' identity card number",
+            array = @ArraySchema(schema = @Schema(type = "string")),
+            example = "87654321"
+          )
+        },
         responses = {
           @ApiResponse(responseCode = "200", description = "OK"),
           @ApiResponse(responseCode = "400", description = "Bad Request")
