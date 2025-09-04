@@ -31,11 +31,6 @@ public class SwaggerConfig {
           .scheme("bearer")
           .bearerFormat("JWT")
           .description("JWT Authentication")
-      ))
-      .info(new io.swagger.v3.oas.models.info.Info()
-        .title("Authentication-Service")
-        .version("1.0")
-        .description("Service of Auth for CreditYa")
-      );
+      ));
   }
 }
