@@ -46,8 +46,19 @@ class UserReactiveRepositoryAdapterTest {
     }
 
     private static User createUser() {
-        return new User(1L, "John", "Doe", "john@example.com", "12345",
-          "pass", "999999999", 1000L, 1, LocalDate.parse("2000-08-24"), "Street 123");
+        return User.builder()
+          .userId(1L)
+          .userRoleId(1)
+          .firstName("John")
+          .lastName("Dow")
+          .email("john@example.com")
+          .identityCardNumber("12345")
+          .password("pass")
+          .phoneNumber("999999999")
+          .basicWaging(1000L)
+          .birthDate(LocalDate.parse("2000-08-24"))
+          .address("Street 123")
+          .build();
     }
 
     @Test
