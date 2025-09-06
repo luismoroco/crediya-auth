@@ -12,7 +12,6 @@ public class RouterPathProperties {
   private AuthPath auth;
   private UserPath user;
 
-
   @Data
   public static class AuthPath {
     private String login;

@@ -1,5 +1,6 @@
 package com.crediya.auth.api;
 
+import com.crediya.auth.api.config.RouterPathProperties;
 import com.crediya.auth.model.user.User;
 import com.crediya.auth.usecase.user.UserUseCase;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
@@ -22,10 +23,23 @@ class UserRouterRestTest {
 
   private UserUseCase useCase;
   private WebTestClient webTestClient;
+  private RouterPathProperties routerPathProperties;
+  private RouterPathProperties.UserPath userPath;
 
   private static User createUser() {
-    return new User(1L, "John", "Doe", "john@example.com", "12345",
-      "pass", "999999999", 1000L, 1, LocalDate.parse("2000-08-24"), "Street 123");
+    return User.builder()
+      .userId(1L)
+      .userRoleId(1)
+      .firstName("John")
+      .lastName("Dow")
+      .email("john@example.com")
+      .identityCardNumber("12345")
+      .password("pass")
+      .phoneNumber("999999999")
+      .basicWaging(1000L)
+      .birthDate(LocalDate.parse("2000-08-24"))
+      .address("Street 123")
+      .build();
   }
 
   private RegisterUserDTO createUserDTO() {
@@ -58,9 +72,18 @@ class UserRouterRestTest {
 
   @BeforeEach
   void setUp() {
+    routerPathProperties = new RouterPathProperties();
+    userPath = new RouterPathProperties.UserPath();
+    userPath.setRegisterUser("/api/v1/users");
+    userPath.setGetUserByIdentityCardNumber("/api/v1/users/{identity_card_number}");
+    userPath.setGetUsers("/api/v1/users");
+
+    routerPathProperties.setUser(userPath);
+
     useCase = mock(UserUseCase.class);
+    //routerPathProperties = new RouterPathProperties();
     UserHandler userHandler = new UserHandler(useCase);
-    RouterFunction<?> routes = new UserRouterRest(userHandler, new GlobalExceptionFilter())
+    RouterFunction<?> routes = new UserRouterRest(userHandler, new GlobalExceptionFilter(), routerPathProperties)
       .userRouterFunction();
     webTestClient = WebTestClient.bindToRouterFunction(routes)
       .build();
@@ -74,7 +97,7 @@ class UserRouterRestTest {
       .thenReturn(Mono.just(user));
 
     webTestClient.post()
-      .uri("/api/v1/users")
+      .uri(userPath.getRegisterUser())
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(createUserDTO())
       .exchange()
@@ -87,7 +110,7 @@ class UserRouterRestTest {
       .thenReturn(Mono.error(new ValidationException("Invalid User")));
 
     webTestClient.post()
-      .uri("/api/v1/users")
+      .uri(userPath.getRegisterUser())
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(createInvalidUserDTO())
       .exchange()
@@ -103,7 +126,7 @@ class UserRouterRestTest {
       .thenReturn(Mono.just(user));
 
     webTestClient.get()
-      .uri("/api/v1/users/{email}", email)
+      .uri(userPath.getGetUserByIdentityCardNumber(), email)
       .exchange()
       .expectStatus().isOk()
       .expectBody()
@@ -119,7 +142,7 @@ class UserRouterRestTest {
       .thenReturn(Mono.error(new NotFoundException("Invalid email")));
 
     webTestClient.post()
-      .uri("/api/v1/users/{email}", email)
+      .uri(userPath.getGetUserByIdentityCardNumber(), email)
       .exchange()
       .expectStatus().is4xxClientError();
   }

@@ -16,6 +16,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDate;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +37,22 @@ class UserHandlerTest {
     MockitoAnnotations.openMocks(this);
   }
 
+  private static User createUser() {
+    return User.builder()
+      .userId(1L)
+      .userRoleId(1)
+      .firstName("John")
+      .lastName("Dow")
+      .email("john@example.com")
+      .identityCardNumber("12345")
+      .password("pass")
+      .phoneNumber("999999999")
+      .basicWaging(1000L)
+      .birthDate(LocalDate.parse("2000-08-24"))
+      .address("Street 123")
+      .build();
+  }
+
   @Test
   void testRegisterUser() {
     RegisterUserDTO dto = RegisterUserDTO.builder()
@@ -49,8 +67,7 @@ class UserHandlerTest {
       .address("Street 123")
       .build();
 
-    User user = new User(1L, "John", "Doe", "john@example.com", "12345",
-      "pass", "999999999", 1000L, 2, java.time.LocalDate.parse("2000-01-01"), "Street 123");
+    User user = createUser();
 
     when(serverRequest.bodyToMono(RegisterUserDTO.class)).thenReturn(Mono.just(dto));
     when(useCase.registerUser(any(RegisterUserDTO.class))).thenReturn(Mono.just(user));
@@ -68,10 +85,9 @@ class UserHandlerTest {
   @Test
   void testGetUserByIdentityCardNumber() {
     String email = "john@example.com";
-    User user = new User(1L, "John", "Doe", email, "12345",
-      "pass", "999999999", 1000L, 2, java.time.LocalDate.parse("2000-01-01"), "Street 123");
+    User user = createUser();
 
-    when(serverRequest.pathVariable("email")).thenReturn(email);
+    when(serverRequest.pathVariable("identity_card_number")).thenReturn(email);
     when(useCase.getUserByIdentityCardNumber(email)).thenReturn(Mono.just(user));
 
     Mono<ServerResponse> responseMono = userHandler.getUserByIdentityCardNumber(serverRequest);
