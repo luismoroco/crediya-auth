@@ -2,6 +2,7 @@ package com.crediya.auth.api;
 
 import com.crediya.auth.model.user.User;
 import com.crediya.auth.usecase.user.UserUseCase;
+import com.crediya.auth.usecase.user.dto.GetUsersDTO;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -11,12 +12,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -91,6 +96,30 @@ class UserHandlerTest {
     when(useCase.getUserByIdentityCardNumber(email)).thenReturn(Mono.just(user));
 
     Mono<ServerResponse> responseMono = userHandler.getUserByIdentityCardNumber(serverRequest);
+
+    StepVerifier.create(responseMono)
+      .assertNext(response -> {
+        assert response.statusCode().equals(HttpStatus.OK);
+        assert response.headers().getContentType().equals(MediaType.APPLICATION_JSON);
+      })
+      .verifyComplete();
+  }
+
+  @Test
+  void testGetUsers() {
+    String identityCardNumber = "12345";
+    User user = createUser();
+
+    GetUsersDTO dto = new GetUsersDTO();
+    dto.setIdentityCardNumbers(List.of(identityCardNumber));
+
+    MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+    queryParams.add("identity_card_numbers", identityCardNumber);
+
+    when(serverRequest.queryParams()).thenReturn(queryParams);
+    when(useCase.getUsers(any(GetUsersDTO.class))).thenReturn(Flux.just(user));
+
+    Mono<ServerResponse> responseMono = userHandler.getUsers(serverRequest);
 
     StepVerifier.create(responseMono)
       .assertNext(response -> {
