@@ -73,7 +73,15 @@ class UserUseCaseTest {
   @Test
   void testRegisterUserEmailAlreadyExists() {
     RegisterUserDTO dto = RegisterUserDTO.builder()
+      .firstName("John")
+      .lastName("Doe")
       .email("john@example.com")
+      .identityCardNumber("12345678")
+      .password("pass123")
+      .phoneNumber("999999999")
+      .basicWaging(1000L)
+      .birthDate("1990-01-01")
+      .address("Street 123")
       .build();
 
     when(repository.existsByIdentityCardNumber(dto.getIdentityCardNumber()))
@@ -92,15 +100,23 @@ class UserUseCaseTest {
   @Test
   void testRegisterUserIdentityCardNumberAlreadyExists() {
     RegisterUserDTO dto = RegisterUserDTO.builder()
-      .identityCardNumber("12345678")
+      .firstName("John")
+      .lastName("Doe")
       .email("john@example.com")
+      .identityCardNumber("12345678")
+      .password("pass123")
+      .phoneNumber("999999999")
+      .basicWaging(1000L)
+      .birthDate("1990-01-01")
+      .address("Street 123")
       .build();
 
-    when(repository.existsByEmail(dto.getEmail())).thenReturn(Mono.just(true));
+    when(repository.existsByEmail(dto.getEmail())).thenReturn(Mono.just(false));
     when(repository.existsByIdentityCardNumber(dto.getIdentityCardNumber())).thenReturn(Mono.just(true));
 
     StepVerifier.create(userUseCase.registerUser(dto))
-      .expectErrorMatches(throwable -> throwable instanceof ValidationException)
+      .expectErrorMatches(throwable -> throwable instanceof ValidationException
+        && throwable.getMessage().contains(dto.getIdentityCardNumber()))
       .verify();
   }
 
