@@ -34,15 +34,6 @@ public class SecurityConfig {
         .pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
         .anyExchange().permitAll()
       )
-//      .authorizeExchange(exchange -> exchange
-//        .pathMatchers(
-//          "/api/v1/auth/log-in",
-//          "/api/v1/auth/sign-up",
-//          "/api/v1/users",
-//          "/api/v1/users/**"
-//        ).permitAll()
-//        .anyExchange().authenticated()
-//      )
       .addFilterAfter(jwtFilter, SecurityWebFiltersOrder.FIRST)
       .securityContextRepository(securityContextRepository)
       .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
