@@ -16,7 +16,7 @@ public class InvalidCredentialsExceptionTest {
       new InvalidCredentialsException("Invalid credentials", body);
 
     assertEquals("Invalid credentials", ex.getMessage());
-    assertEquals(body, ex.getBody()); // asumiendo que BadRequestException expone getBody()
+    assertEquals(body, ex.getBody());
   }
 
   @Test
