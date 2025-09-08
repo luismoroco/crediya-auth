@@ -136,4 +136,51 @@ class UserReactiveRepositoryAdapterTest {
           .expectNextMatches(u -> u.getEmail().equals("john@example.com"))
           .verifyComplete();
     }
+
+    @Test
+    void mustFindValueByIdentityCardNumber() {
+        String identityCardNumber = "12345";
+
+        UserEntity entity = createEntity();
+        User user = createUser();
+
+        when(repository.findByIdentityCardNumber(identityCardNumber)).thenReturn(Mono.just(entity));
+        when(mapper.map(entity, User.class)).thenReturn(user);
+
+        Mono<User> result = repositoryAdapter.findByIdentityCardNumber(identityCardNumber);
+
+        StepVerifier.create(result)
+          .expectNextMatches(u -> u.getIdentityCardNumber().equals("12345"))
+          .verifyComplete();
+    }
+
+    @Test
+    void mustVerifyWhetherValueExistsByIdentityCardNumber() {
+        String identityCardNumber = "12345";
+
+        when(repository.existsByIdentityCardNumber(identityCardNumber)).thenReturn(Mono.just(Boolean.TRUE));
+
+        Mono<Boolean> result = repositoryAdapter.existsByIdentityCardNumber(identityCardNumber);
+
+        StepVerifier.create(result)
+          .expectNext(true)
+          .verifyComplete();
+    }
+
+    @Test
+    void mustFindUsersByIdentityCardNumbers() {
+        String identityCardNumber = "12345";
+
+        UserEntity entity = createEntity();
+        User user = createUser();
+
+        when(repository.findUsers(java.util.List.of(identityCardNumber))).thenReturn(Flux.just(entity));
+        when(mapper.map(entity, User.class)).thenReturn(user);
+
+        Flux<User> result = repositoryAdapter.findUsers(java.util.List.of(identityCardNumber));
+
+        StepVerifier.create(result)
+          .expectNextMatches(u -> u.getIdentityCardNumber().equals("12345"))
+          .verifyComplete();
+    }
 }
