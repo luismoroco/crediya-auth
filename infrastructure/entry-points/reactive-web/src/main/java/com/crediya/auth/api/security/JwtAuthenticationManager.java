@@ -1,5 +1,6 @@
 package com.crediya.auth.api.security;
 
+import com.crediya.auth.api.exc.InvalidTokenException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,7 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
   public Mono<Authentication> authenticate(Authentication authentication) {
     return Mono.just(authentication)
       .map(auth -> jwtProvider.getClaims(auth.getCredentials().toString()))
-      .onErrorResume(e -> Mono.error(new Throwable("bad token")))
+      .onErrorResume(e -> Mono.error(new InvalidTokenException("Invalid token formation")))
       .map(claims -> {
         String role = claims.get("role", String.class);
         List<GrantedAuthority> authorities =
