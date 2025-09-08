@@ -8,6 +8,7 @@ import com.crediya.auth.model.user.gateways.UserRepository;
 import com.crediya.auth.usecase.user.dto.GetUsersDTO;
 import com.crediya.auth.usecase.user.dto.LogInDTO;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
+import com.crediya.auth.usecase.user.exc.InvalidCredentialsException;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
 import com.crediya.common.logging.Logger;
@@ -75,8 +76,10 @@ class UserUseCaseTest {
       .email("john@example.com")
       .build();
 
-    when(repository.existsByEmail(dto.getEmail())).thenReturn(Mono.just(true));
-    when(repository.existsByIdentityCardNumber(dto.getIdentityCardNumber())).thenReturn(Mono.just(true));
+    when(repository.existsByIdentityCardNumber(dto.getIdentityCardNumber()))
+      .thenReturn(Mono.just(false));
+    when(repository.existsByEmail(dto.getEmail()))
+      .thenReturn(Mono.just(true));
 
     StepVerifier.create(userUseCase.registerUser(dto))
       .expectErrorMatches(throwable -> throwable instanceof ValidationException)
@@ -84,6 +87,21 @@ class UserUseCaseTest {
 
     verify(repository, times(1)).existsByEmail(dto.getEmail());
     verify(repository, times(0)).save(any());
+  }
+
+  @Test
+  void testRegisterUserIdentityCardNumberAlreadyExists() {
+    RegisterUserDTO dto = RegisterUserDTO.builder()
+      .identityCardNumber("12345678")
+      .email("john@example.com")
+      .build();
+
+    when(repository.existsByEmail(dto.getEmail())).thenReturn(Mono.just(true));
+    when(repository.existsByIdentityCardNumber(dto.getIdentityCardNumber())).thenReturn(Mono.just(true));
+
+    StepVerifier.create(userUseCase.registerUser(dto))
+      .expectErrorMatches(throwable -> throwable instanceof ValidationException)
+      .verify();
   }
 
   @Test
@@ -164,6 +182,18 @@ class UserUseCaseTest {
   }
 
   @Test
+  void testGetUsersNotFound() {
+    GetUsersDTO dto = new GetUsersDTO();
+    dto.setIdentityCardNumbers(List.of("12343455"));
+
+    when(repository.findUsers(dto.getIdentityCardNumbers())).thenReturn(Flux.empty());
+
+    StepVerifier.create(userUseCase.getUsers(dto))
+      .expectNextCount(0)
+      .verifyComplete();
+  }
+
+  @Test
   void testValidateGetUsersDTOConstraintsSuccess() {
     GetUsersDTO dto = new GetUsersDTO();
     dto.setIdentityCardNumbers(List.of("12343455"));
@@ -199,5 +229,36 @@ class UserUseCaseTest {
 
     StepVerifier.create(UserUseCase.validateLoginDTOConstraints(dto))
       .verifyComplete();
+  }
+
+  @Test
+  void testLoginUserNotFound() {
+    LogInDTO dto = new LogInDTO();
+    dto.setEmail("root@gmail.com");
+    dto.setPassword("pass123");
+
+    when(repository.findByEmail(dto.getEmail())).thenReturn(Mono.empty());
+
+    StepVerifier.create(userUseCase.logIn(dto))
+      .expectErrorMatches(throwable -> throwable instanceof NotFoundException)
+      .verify();
+  }
+
+  @Test
+  void testLoginPasswordError() {
+    LogInDTO dto = new LogInDTO();
+    dto.setEmail("root@gmail.com");
+    dto.setPassword("pass123");
+
+    User user = new User();
+    user.setEmail("root@gmail.com");
+    user.setPassword("encoded-pass123");
+
+    when(repository.findByEmail(dto.getEmail())).thenReturn(Mono.just(user));
+    when(passwordEncoder.matches(dto.getPassword(), "encoded-pass123")).thenReturn(false);
+
+    StepVerifier.create(userUseCase.logIn(dto))
+      .expectErrorMatches(throwable -> throwable instanceof InvalidCredentialsException)
+      .verify();
   }
 }
