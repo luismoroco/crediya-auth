@@ -9,8 +9,8 @@ import com.crediya.auth.usecase.user.dto.GetUsersDTO;
 import com.crediya.auth.usecase.user.dto.LogInDTO;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.auth.usecase.user.exc.InvalidCredentialsException;
+import com.crediya.common.exc.BadRequestException;
 import com.crediya.common.exc.NotFoundException;
-import com.crediya.common.exc.ValidationException;
 import com.crediya.common.logging.Logger;
 import com.crediya.common.validation.ValidatorUtils;
 import static com.crediya.auth.model.user.User.Field.*;
@@ -40,7 +40,7 @@ public class UserUseCase {
       .flatMap(identityCardNumberExists -> {
         if (Boolean.TRUE.equals(identityCardNumberExists)) {
           this.logger.error("User identity card number already exists [identityCardNumber={}]", dto.getIdentityCardNumber());
-          return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber())));
+          return Mono.error(new BadRequestException(ENTITY_ALREADY_EXISTS.of(IDENTITY_CARD_NUMBER, dto.getIdentityCardNumber())));
         }
 
         return Mono.empty();
@@ -49,7 +49,7 @@ public class UserUseCase {
       .flatMap(userExists -> {
         if (Boolean.TRUE.equals(userExists)) {
           this.logger.error("User email already exists [email={}]", dto.getEmail());
-          return Mono.error(new ValidationException(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail())));
+          return Mono.error(new BadRequestException(ENTITY_ALREADY_EXISTS.of(EMAIL, dto.getEmail())));
         }
 
         return Mono.empty();

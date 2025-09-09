@@ -9,6 +9,7 @@ import com.crediya.auth.usecase.user.dto.GetUsersDTO;
 import com.crediya.auth.usecase.user.dto.LogInDTO;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.auth.usecase.user.exc.InvalidCredentialsException;
+import com.crediya.common.exc.BadRequestException;
 import com.crediya.common.exc.NotFoundException;
 import com.crediya.common.exc.ValidationException;
 import com.crediya.common.logging.Logger;
@@ -90,7 +91,7 @@ class UserUseCaseTest {
       .thenReturn(Mono.just(true));
 
     StepVerifier.create(userUseCase.registerUser(dto))
-      .expectErrorMatches(throwable -> throwable instanceof ValidationException)
+      .expectErrorMatches(throwable -> throwable instanceof BadRequestException)
       .verify();
 
     verify(repository, times(1)).existsByEmail(dto.getEmail());
@@ -115,7 +116,7 @@ class UserUseCaseTest {
     when(repository.existsByIdentityCardNumber(dto.getIdentityCardNumber())).thenReturn(Mono.just(true));
 
     StepVerifier.create(userUseCase.registerUser(dto))
-      .expectErrorMatches(throwable -> throwable instanceof ValidationException
+      .expectErrorMatches(throwable -> throwable instanceof BadRequestException
         && throwable.getMessage().contains(dto.getIdentityCardNumber()))
       .verify();
   }
