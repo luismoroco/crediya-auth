@@ -11,7 +11,7 @@ import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.auth.usecase.user.exc.InvalidCredentialsException;
 import com.crediya.common.exc.BadRequestException;
 import com.crediya.common.exc.NotFoundException;
-import com.crediya.common.exc.ValidationException;
+import com.crediya.common.validation.exc.ValidationException;
 import com.crediya.common.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
