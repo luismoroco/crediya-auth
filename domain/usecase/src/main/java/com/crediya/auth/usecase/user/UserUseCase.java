@@ -61,7 +61,7 @@ public class UserUseCase {
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setIdentityCardNumber(dto.getIdentityCardNumber());
-        user.setPassword(dto.getPassword());
+        user.setPassword(this.passwordEncoder.encode(dto.getPassword()));
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setBasicWaging(dto.getBasicWaging());
         user.setBirthDate(LocalDate.parse(dto.getBirthDate()));
