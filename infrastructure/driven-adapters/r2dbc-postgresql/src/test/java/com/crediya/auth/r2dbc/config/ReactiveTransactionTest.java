@@ -9,9 +9,6 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 @ExtendWith(MockitoExtension.class)
 class ReactiveTransactionTest {
 
@@ -27,8 +24,6 @@ class ReactiveTransactionTest {
     Mono<String> inputMono = Mono.just("test");
 
     transaction.init(inputMono);
-
-    //verify(reactiveTransactionManager, times(1));
   }
 
   @Test
@@ -37,7 +32,5 @@ class ReactiveTransactionTest {
     Flux<String> inputFlux = Flux.just("test");
 
     transaction.init(inputFlux);
-
-    //verify(reactiveTransactionManager, times(1));
   }
 }
