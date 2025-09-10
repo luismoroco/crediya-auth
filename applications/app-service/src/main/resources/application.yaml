@@ -4,7 +4,7 @@ logging:
     com.crediya.auth: DEBUG
     org.springframework.security: DEBUG
 server:
-  port: 8081
+    port: ${PORT}
 spring:
   config:
     import: optional:file:.env[.properties]
