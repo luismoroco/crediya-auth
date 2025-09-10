@@ -6,7 +6,7 @@ import com.crediya.auth.usecase.user.UserUseCase;
 import com.crediya.auth.usecase.user.dto.RegisterUserDTO;
 import com.crediya.common.api.handling.GlobalExceptionFilter;
 import com.crediya.common.exc.NotFoundException;
-import com.crediya.common.exc.ValidationException;
+import com.crediya.common.validation.exc.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
