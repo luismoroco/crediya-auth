@@ -1,5 +1,3 @@
-app:
-  version: 1.0.0
 logging:
   level:
     root: INFO
@@ -8,8 +6,11 @@ logging:
 server:
   port: 8081
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: "crediya-auth"
+    version: 1.0.0
   devtools:
     add-properties: false
   h2:
@@ -20,23 +21,23 @@ spring:
     include: null
   liquibase:
     enabled: true
-    url: jdbc:postgresql://localhost:5432/crediya
-    user: admin
-    password: admin123
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
     change-log: classpath:/db/changelog/db.changelog-master.yaml
   security:
     oauth2:
       resourceserver:
         jwt:
-          secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+          secret-key: ${JWT_SECRET_KEY}
 adapters:
   r2dbc:
-    host: "localhost"
-    port: 5432
-    database: "crediya"
+    host: ${DB_HOST}
+    port: ${DB_PORT}
+    database: ${DB_NAME}
     schema: "public"
-    username: "admin"
-    password: "admin123"
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 management:
   endpoints:
     web:
@@ -49,8 +50,8 @@ management:
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 jwt:
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-  expiration: 86400000
+  secret: ${JWT_SECRET_KEY}
+  expiration: ${JWT_EXPIRATION}
 route:
   path:
     auth:
